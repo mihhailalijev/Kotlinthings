@@ -6,18 +6,10 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import com.vk.sdk.VKSdk
+import com.vk.sdk.util.VKUtil
 
 
 import kotlinx.android.synthetic.main.activity_main.*
-import com.vk.sdk.api.VKError
-import com.vk.sdk.VKAccessToken
-import com.vk.sdk.VKCallback
-import androidx.core.app.ComponentActivity
-import androidx.core.app.ComponentActivity.ExtraData
-import androidx.core.content.ContextCompat.getSystemService
-import android.icu.lang.UCharacter.GraphemeClusterBreak.T
-import com.vk.sdk.WebView
-
 
 class MainActivity : AppCompatActivity() {
 
@@ -27,8 +19,8 @@ class MainActivity : AppCompatActivity() {
 
         println("Test")
 
-
-     //   VKSdk.login(this)
+        val context = baseContext.applicationContext
+        VKSdk.initialize(context)
     }
 
     fun login(view: View) {
@@ -36,28 +28,19 @@ class MainActivity : AppCompatActivity() {
         println(loginInput.text)
         println(passwordInput.text)
 
-        val intent = Intent(this, GalleryActivity::class.java).apply {
-           // startActivity(intent)
-        }
+        val intent = Intent(this, GalleryActivity::class.java).apply {}
         startActivity(intent)
 
 
+        val fingerprints = VKUtil.getCertificateFingerprint(this, this.packageName)
+
+        for (fingerprint in fingerprints) {
+            println("fingerprint: $fingerprint")
+            this.getPackageName()
+        }
+
+
+
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        println("VK - onActivityResult")
-        if (!// Пользователь успешно авторизовался
-            // Произошла ошибка авторизации (например, пользователь запретил авторизацию)
-            VKSdk.onActivityResult(
-                requestCode,
-                resultCode,
-                data,
-                object : VKCallback<VKAccessToken> {
-                    override fun onResult(res: VKAccessToken) {}
-                    override fun onError(error: VKError) {}
-                })
-        ) {
-            super.onActivityResult(requestCode, resultCode, data)
-        }
-    }
 }
