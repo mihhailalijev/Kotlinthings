@@ -20,7 +20,8 @@ class MainActivity : AppCompatActivity() {
         println("Test")
 
         val context = baseContext.applicationContext
-        VKSdk.initialize(context)
+
+       VKSdk.login(this)
     }
 
     fun login(view: View) {
@@ -28,7 +29,7 @@ class MainActivity : AppCompatActivity() {
         println(loginInput.text)
         println(passwordInput.text)
 
-        val intent = Intent(this, GalleryActivity::class.java).apply {}
+        val intent = Intent(this, GalleryActivity::class.java)
         startActivity(intent)
 
 
