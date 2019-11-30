@@ -1,18 +1,27 @@
 package com.example.kotlinthings
 
+import android.graphics.BitmapFactory
 import android.os.Bundle
+import android.provider.MediaStore
 import android.util.Log
 import android.view.View
+import android.widget.ImageView
+
 import androidx.appcompat.app.AppCompatActivity
+import com.squareup.picasso.Picasso
 import com.vk.sdk.api.*
 import com.vk.sdk.api.VKRequest.VKRequestListener
+import kotlinx.android.synthetic.main.activity_gallery.view.*
 import org.json.JSONException
 import org.json.JSONObject
 
 
 open class GalleryActivity : AppCompatActivity() {
 
-    val debugTag = "SDKdebug"
+    private val debugTag = "SDKdebug"
+
+    // List of photo links
+    var photoArray = mutableListOf<String>()
     
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,7 +41,7 @@ open class GalleryActivity : AppCompatActivity() {
         request.executeWithListener(object : VKRequestListener() {
             override fun onComplete(response: VKResponse) {
                 //Do complete stuff
-                createPhotoArray(response) // send response to parse method
+                createPhotoLinkList(response) // send response to parse method
             }
 
             override fun onError(error: VKError?) {
@@ -49,9 +58,20 @@ open class GalleryActivity : AppCompatActivity() {
         })
     }
 
-    private fun createPhotoArray(response : VKResponse) {
+    fun displayPhoto(view: View) {
 
-        var photoArray = arrayOf<String>()
+        var photo = photoArray[0]
+
+        val testPhoto = findViewById(R.id.testPhoto) as ImageView
+
+        // i guess it's cheating by using 3rd party libraries
+        Picasso.get().load(photo).into(testPhoto);
+    }
+
+
+
+
+    private fun createPhotoLinkList(response : VKResponse) {
 
         try {
             val `object` = JSONObject(response.responseString)
@@ -72,7 +92,7 @@ open class GalleryActivity : AppCompatActivity() {
 
                 Log.i(debugTag, "index i = $i link = $link")
 
-               photoArray.set(i, link) // CRASH
+               photoArray.add(i, link) // CRASH
             }
 
         } catch (e: JSONException) {
