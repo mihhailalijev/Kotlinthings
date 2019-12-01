@@ -1,5 +1,4 @@
 <resources>
     <string name="app_name">Kotlin things</string>
     <integer name="com_vk_sdk_AppId">7225532</integer>
-
 </resources>

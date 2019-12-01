@@ -1,27 +1,27 @@
 package com.example.kotlinthings
 
-import android.graphics.BitmapFactory
 import android.os.Bundle
-import android.provider.MediaStore
 import android.util.Log
 import android.view.View
-import android.widget.ImageView
-
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import com.squareup.picasso.Picasso
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.vk.sdk.api.*
 import com.vk.sdk.api.VKRequest.VKRequestListener
-import kotlinx.android.synthetic.main.activity_gallery.view.*
 import org.json.JSONException
 import org.json.JSONObject
 
-
 open class GalleryActivity : AppCompatActivity() {
+
+    private lateinit var recyclerView: RecyclerView
+    private lateinit var viewAdapter: RecyclerView.Adapter<*>
+    private lateinit var viewManager: RecyclerView.LayoutManager
 
     private val debugTag = "SDKdebug"
 
     // List of photo links
-    var photoArray = mutableListOf<String>()
+    var photoLinkArray = mutableListOf<String>()
     
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,7 +32,7 @@ open class GalleryActivity : AppCompatActivity() {
 
         var requestParameters = VKParameters.from(
             VKApiConst.ALBUM_ID, "wall", // Get photos from user's wall
-            VKApiConst.COUNT, "5") // Get max 5 photos
+            VKApiConst.COUNT, "30") // Get max 5 photos
 
         // request = request method + parameters
         var request = VKRequest("photos.getAll", requestParameters)
@@ -56,20 +56,13 @@ open class GalleryActivity : AppCompatActivity() {
 
             }
         })
+
     }
 
-    fun displayPhoto(view: View) {
+    fun displayPhotos(view: View) {
 
-        var photo = photoArray[0]
-
-        val testPhoto = findViewById(R.id.testPhoto) as ImageView
-
-        // i guess it's cheating by using 3rd party libraries
-        Picasso.get().load(photo).into(testPhoto);
+        displayGallery(photoLinkArray)
     }
-
-
-
 
     private fun createPhotoLinkList(response : VKResponse) {
 
@@ -77,6 +70,9 @@ open class GalleryActivity : AppCompatActivity() {
             val `object` = JSONObject(response.responseString)
             val responseObject = `object`.getJSONObject("response")
             val array = responseObject.getJSONArray("items")
+
+            // Clear the list, so there will be no duplicates
+            photoLinkArray.clear()
 
             for (i in 0 until array.length()) {
 
@@ -92,17 +88,38 @@ open class GalleryActivity : AppCompatActivity() {
 
                 Log.i(debugTag, "index i = $i link = $link")
 
-               photoArray.add(i, link) // CRASH
+                photoLinkArray.add(i, link) // CRASH
             }
 
         } catch (e: JSONException) {
-            Log.i(debugTag, "Parsing Json's is just not your thing")
+            Log.i(debugTag, "Parsing Json's is just not my thing")
         }
 
+        // Show text view with debug info
+        showPhotoDebugInfo()
+    }
 
+    private fun showPhotoDebugInfo() {
 
+        val textview =  findViewById(R.id.debugTextView) as TextView
 
+        textview.text = "Photos are loaded, amount is: ${photoLinkArray.count()}"
 
+    }
+
+    private fun displayGallery(photoLinkArray: List<String>) {
+        Log.i(debugTag, "displayGallery called")
+
+        viewManager = GridLayoutManager(this,4)
+        viewAdapter = GalleryAdapter(photoLinkArray)
+
+        recyclerView = findViewById<RecyclerView>(R.id.galleryRecyclerView).apply {
+
+            setHasFixedSize(true) // All photos are fixed size (size can be set, by using different link in response)
+
+            layoutManager = viewManager
+            adapter = viewAdapter
+        }
     }
 }
 

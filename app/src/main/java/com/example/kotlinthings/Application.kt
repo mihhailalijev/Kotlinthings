@@ -2,13 +2,8 @@ package com.example.kotlinthings
 
 import android.util.Log
 import com.vk.sdk.VKSdk
-import kotlin.math.log
 import com.vk.sdk.VKAccessToken
 import com.vk.sdk.VKAccessTokenTracker
-import androidx.core.content.ContextCompat.getSystemService
-import android.icu.lang.UCharacter.GraphemeClusterBreak.T
-
-
 
 class Application : android.app.Application() {
 
@@ -23,7 +18,6 @@ class Application : android.app.Application() {
         isUserLoggedIn = VKSdk.isLoggedIn()
 
         Log.i("SDKdebug", "is User already logged in: $isUserLoggedIn")
-
     }
 
     var vkAccessTokenTracker: VKAccessTokenTracker = object : VKAccessTokenTracker() {

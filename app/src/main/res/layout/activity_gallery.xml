@@ -4,10 +4,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/login_background"
+    android:background="@drawable/app_background"
     tools:context=".GalleryActivity">
 
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/constraintLayout2"
         android:layout_width="409dp"
         android:layout_height="100dp"
         app:layout_constraintBottom_toTopOf="@+id/constraintLayout"
@@ -20,9 +21,9 @@
 
             android:layout_height="match_parent"
             android:backgroundTint="@color/vk_share_blue_color"
-            android:onClick="displayPhoto"
+            android:onClick="displayPhotos"
             android:padding="30dp"
-            android:text="Display Photo"
+            android:text="Display Photos"
             android:textColor="@color/vk_white"
             android:textSize="30sp"
 
@@ -64,21 +65,34 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <ImageView
-        android:id="@+id/testPhoto"
-        android:layout_width="75dp"
-        android:layout_height="75dp"
-        app:layout_constraintBottom_toTopOf="@+id/constraintLayout"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@android:color/holo_blue_bright" />
-
     <TextView
-        android:id="@+id/textView"
-        android:layout_width="44dp"
-        android:layout_height="4dp"
-        android:text="TextView"
+        android:id="@+id/debugTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="20dp"
+
+        android:text="NO PHOTOS ARE LOADED"
+        android:textColor="@color/vk_white"
+        android:textSize="20sp"
+        android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.recyclerview.widget.RecyclerView
+
+        android:id="@+id/galleryRecyclerView"
+
+        android:layout_width="wrap_content"
+
+
+        android:layout_height="440dp"
+        android:gravity="center"
+
+        app:layout_constraintBottom_toTopOf="@+id/constraintLayout2"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/debugTextView" />
+
+
+
 </androidx.constraintlayout.widget.ConstraintLayout>
