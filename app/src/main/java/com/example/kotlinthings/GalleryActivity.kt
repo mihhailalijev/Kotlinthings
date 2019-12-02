@@ -32,7 +32,7 @@ open class GalleryActivity : AppCompatActivity() {
 
         var requestParameters = VKParameters.from(
             VKApiConst.ALBUM_ID, "wall", // Get photos from user's wall
-            VKApiConst.COUNT, "30") // Get max 5 photos
+            VKApiConst.COUNT, "50") // Get max 30 photos
 
         // request = request method + parameters
         var request = VKRequest("photos.getAll", requestParameters)
@@ -81,14 +81,14 @@ open class GalleryActivity : AppCompatActivity() {
 
 
                 var id = item.getInt("id") // Get id for photo
-                var link = item["photo_75"].toString() // Get link for photo
+                var link = item["photo_604"].toString() // Get link for photo
 
                 Log.i(debugTag, "PHOTO ID: $id")
                 Log.i(debugTag, "PHOTO LINK: $link")
 
                 Log.i(debugTag, "index i = $i link = $link")
 
-                photoLinkArray.add(i, link) // CRASH
+                photoLinkArray.add(link)
             }
 
         } catch (e: JSONException) {

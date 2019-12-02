@@ -12,7 +12,11 @@ class GalleryAdapter(photoLinkArray: List<String>) : RecyclerView.Adapter<Galler
 
     var photoLinkArray = photoLinkArray
 
-    class ViewHolder(view: View) : RecyclerView.ViewHolder(view)
+    class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+
+        val imageView = view.findViewById<ImageView>(R.id.galleryPhotoCell)
+
+    }
 
         // Create new views (invoked by the layout manager)
         override fun onCreateViewHolder(
@@ -34,7 +38,9 @@ class GalleryAdapter(photoLinkArray: List<String>) : RecyclerView.Adapter<Galler
 
         var photo = photoLinkArray[position]
 
-     //   Picasso.get().load(photo).into()
+
+
+      Picasso.get().load(photo).into(holder.imageView)
     }
 
 
