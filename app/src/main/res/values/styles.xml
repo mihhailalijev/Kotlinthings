@@ -7,4 +7,7 @@
         <item name="android:windowFullscreen">true</item>
     </style>
 
+    <style name="fullScreenStyle" parent="AppTheme.NoActionBar">
+        <item name="android:windowBackground">@android:color/transparent</item>
+    </style>
 </resources>

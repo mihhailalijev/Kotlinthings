@@ -94,5 +94,4 @@
         app:layout_constraintTop_toBottomOf="@+id/debugTextView" />
 
 
-
 </androidx.constraintlayout.widget.ConstraintLayout>

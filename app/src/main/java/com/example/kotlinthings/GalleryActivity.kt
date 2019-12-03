@@ -1,5 +1,6 @@
 package com.example.kotlinthings
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -9,6 +10,7 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.vk.sdk.api.*
 import com.vk.sdk.api.VKRequest.VKRequestListener
+import kotlinx.android.synthetic.main.photo_cell_layout.*
 import org.json.JSONException
 import org.json.JSONObject
 
@@ -111,7 +113,17 @@ open class GalleryActivity : AppCompatActivity() {
         Log.i(debugTag, "displayGallery called")
 
         viewManager = GridLayoutManager(this,4)
-        viewAdapter = GalleryAdapter(photoLinkArray)
+        viewAdapter = GalleryAdapter(photoLinkArray) { id ->
+
+            Log.i(debugTag, id)
+
+            val intent = Intent(this, FullScreenPreview::class.java )
+            intent.putExtra("id", id)
+            startActivity(intent)
+
+        } // id -> photo id
+
+
 
         recyclerView = findViewById<RecyclerView>(R.id.galleryRecyclerView).apply {
 

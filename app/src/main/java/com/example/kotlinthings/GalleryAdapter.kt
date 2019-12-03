@@ -3,18 +3,34 @@ package com.example.kotlinthings
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.FrameLayout
 import android.widget.ImageView
 import androidx.recyclerview.widget.RecyclerView
 import com.squareup.picasso.Picasso
 
-class GalleryAdapter(photoLinkArray: List<String>) : RecyclerView.Adapter<GalleryAdapter.ViewHolder>() {
+typealias OnItemClickListener = (id: String) -> Unit
+
+typealias A = Boolean
+typealias HUIIINT = Int
+
+val HUINT : HUIIINT = 5
+
+class GalleryAdapter(photoLinkArray: List<String>, private val onItemClickListener : OnItemClickListener) : RecyclerView.Adapter<GalleryAdapter.ViewHolder>() {
 
     var photoLinkArray = photoLinkArray
 
-    class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+  inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+
+
 
         val imageView = view.findViewById<ImageView>(R.id.galleryPhotoCell)
+
+        init {
+            view.isFocusable = true
+            view.isClickable = true
+            view.setOnClickListener {
+                onItemClickListener(photoLinkArray[adapterPosition])
+            }
+        }
 
     }
 
@@ -22,6 +38,8 @@ class GalleryAdapter(photoLinkArray: List<String>) : RecyclerView.Adapter<Galler
         override fun onCreateViewHolder(
             parent: ViewGroup,
             viewType: Int
+
+
         ): ViewHolder {
 
             val imageView = LayoutInflater.from(parent.context)
@@ -39,10 +57,9 @@ class GalleryAdapter(photoLinkArray: List<String>) : RecyclerView.Adapter<Galler
         var photo = photoLinkArray[position]
 
 
+        Picasso.get().load(photo).into(holder.imageView)
 
-      Picasso.get().load(photo).into(holder.imageView)
     }
-
 
 }
 
