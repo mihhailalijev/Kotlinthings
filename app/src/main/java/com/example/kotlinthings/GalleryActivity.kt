@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -21,6 +22,7 @@ open class GalleryActivity : AppCompatActivity() {
     private lateinit var viewManager: RecyclerView.LayoutManager
 
     private val debugTag = "SDKdebug"
+    var backNavigationEnabled = true
 
     // List of photo links
     var photoLinkArray = mutableListOf<String>()
@@ -28,6 +30,18 @@ open class GalleryActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_gallery)
+
+        backNavigationEnabled = intent.getBooleanExtra("backNavigationEnabled", true)
+    }
+
+    override fun onBackPressed() {
+        Log.i("123", "DEBUG PRESSED and 'backNavigationEnabled' is: $backNavigationEnabled")
+
+        if (!backNavigationEnabled) {
+            Toast.makeText(baseContext.applicationContext, "You already logged in", Toast.LENGTH_LONG).show()
+        } else {
+            super.onBackPressed()
+        }
     }
 
     fun getPhotos(view: View) {

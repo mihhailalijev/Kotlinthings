@@ -3,6 +3,7 @@ package com.example.kotlinthings
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import com.vk.sdk.VKSdk
 import com.vk.sdk.api.VKError
@@ -19,14 +20,11 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        if(VKSdk.isLoggedIn()) openGalleryActivity()
+
     }
 
-    fun login(view: View) {
-
-        // Triggers VK's login activity
-        // This will trigger "onActivityResult"
-        VKSdk.login(this, scope)
-    }
+    fun login(view: View) { VKSdk.login(this, scope) }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (!VKSdk.onActivityResult(
@@ -39,16 +37,23 @@ class MainActivity : AppCompatActivity() {
                         Toast.makeText(baseContext.applicationContext, "Successfully logged in", Toast.LENGTH_LONG).show()
 
                         // Open Gallery activity
-                        val intent = Intent(baseContext.applicationContext, GalleryActivity::class.java)
-                        startActivity(intent)
+                        openGalleryActivity()
                     }
                     override fun onError(error: VKError) {
                         // On Authorization problem shows error code
-                        Toast.makeText(baseContext.applicationContext, "There was an error, error code: $resultCode", Toast.LENGTH_LONG).show()
+                        Toast.makeText(baseContext.applicationContext, "There was an error, ${requestCode}", Toast.LENGTH_LONG).show()
                     }
                 })
         ) {
             super.onActivityResult(requestCode, resultCode, data)
         }
+    }
+
+    private fun openGalleryActivity() {
+
+        val intent = Intent(baseContext.applicationContext,
+            GalleryActivity::class.java).putExtra("backNavigationEnabled", false)
+
+        startActivity(intent)
     }
 }

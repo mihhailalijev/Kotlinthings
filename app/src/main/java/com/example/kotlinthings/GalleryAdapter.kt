@@ -1,5 +1,6 @@
 package com.example.kotlinthings
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -8,11 +9,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.squareup.picasso.Picasso
 
 typealias OnItemClickListener = (id: String) -> Unit
-
-typealias A = Boolean
-typealias HUIIINT = Int
-
-val HUINT : HUIIINT = 5
 
 class GalleryAdapter(photoLinkArray: List<String>, private val onItemClickListener : OnItemClickListener) : RecyclerView.Adapter<GalleryAdapter.ViewHolder>() {
 
@@ -56,6 +52,15 @@ class GalleryAdapter(photoLinkArray: List<String>, private val onItemClickListen
 
         var photo = photoLinkArray[position]
 
+        var position = holder.adapterPosition
+
+        Log.i("ADAPTER POSITION:", "$position")
+        Log.i("ITEM COUNT:", "$itemCount")
+
+        if(holder.adapterPosition == itemCount) {
+            Log.i("SDKdebug1","POSITION = LAST ELEMENT")
+
+        }
 
         Picasso.get().load(photo).into(holder.imageView)
 
