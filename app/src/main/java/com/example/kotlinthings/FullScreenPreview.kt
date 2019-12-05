@@ -1,7 +1,9 @@
 package com.example.kotlinthings
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.View
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.activity_full_screen_preview.*
 
@@ -14,6 +16,12 @@ class FullScreenPreview : AppCompatActivity() {
         val url = intent.getStringExtra("id")
 
         Picasso.get().load(url).into(fullScreenImage)
+    }
 
+    fun closePreview(view: View) {
+        val intent = Intent(baseContext.applicationContext,
+            GalleryActivity::class.java)
+        finish()
+        startActivity(intent)
     }
 }

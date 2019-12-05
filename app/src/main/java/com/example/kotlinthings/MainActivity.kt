@@ -51,9 +51,8 @@ class MainActivity : AppCompatActivity() {
 
     private fun openGalleryActivity() {
 
-        val intent = Intent(baseContext.applicationContext,
-            GalleryActivity::class.java).putExtra("backNavigationEnabled", false)
-
+        val intent = Intent(baseContext.applicationContext, GalleryActivity::class.java)
+        finish()
         startActivity(intent)
     }
 }

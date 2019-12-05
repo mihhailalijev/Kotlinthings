@@ -1,9 +1,13 @@
 package com.example.kotlinthings
 
 import android.content.Intent
+import android.content.res.Resources
+import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.util.Log
+import android.view.LayoutInflater
 import android.view.View
+import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -11,6 +15,7 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.vk.sdk.api.*
 import com.vk.sdk.api.VKRequest.VKRequestListener
+import kotlinx.android.synthetic.main.activity_gallery.*
 import kotlinx.android.synthetic.main.photo_cell_layout.*
 import org.json.JSONException
 import org.json.JSONObject
@@ -22,42 +27,35 @@ open class GalleryActivity : AppCompatActivity() {
     private lateinit var viewManager: RecyclerView.LayoutManager
 
     private val debugTag = "SDKdebug"
-    var backNavigationEnabled = true
 
     // List of photo links
-    var photoLinkArray = mutableListOf<String>()
+    var photoLinkList = mutableListOf<String>()
     
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_gallery)
 
-        backNavigationEnabled = intent.getBooleanExtra("backNavigationEnabled", true)
+        if (photoLinkList.count() == 0) getAndDisplayPhotos()
     }
 
-    override fun onBackPressed() {
-        Log.i("123", "DEBUG PRESSED and 'backNavigationEnabled' is: $backNavigationEnabled")
-
-        if (!backNavigationEnabled) {
-            Toast.makeText(baseContext.applicationContext, "You already logged in", Toast.LENGTH_LONG).show()
-        } else {
-            super.onBackPressed()
-        }
-    }
-
-    fun getPhotos(view: View) {
+    private fun getAndDisplayPhotos() {
 
         var requestParameters = VKParameters.from(
             VKApiConst.ALBUM_ID, "wall", // Get photos from user's wall
-            VKApiConst.COUNT, "50") // Get max 30 photos
+            VKApiConst.COUNT, "50") // Get max 50 photos
 
-        // request = request method + parameters
         var request = VKRequest("photos.getAll", requestParameters)
 
-        // execute request and wait for result
         request.executeWithListener(object : VKRequestListener() {
             override fun onComplete(response: VKResponse) {
                 //Do complete stuff
+                Log.i(debugTag, "Before Array: ${photoLinkList.count()}")
+
                 createPhotoLinkList(response) // send response to parse method
+
+                Log.i(debugTag, "After array: ${photoLinkList.count()}")
+
+                displayGallery(photoLinkList)
             }
 
             override fun onError(error: VKError?) {
@@ -72,12 +70,6 @@ open class GalleryActivity : AppCompatActivity() {
 
             }
         })
-
-    }
-
-    fun displayPhotos(view: View) {
-
-        displayGallery(photoLinkArray)
     }
 
     private fun createPhotoLinkList(response : VKResponse) {
@@ -88,23 +80,15 @@ open class GalleryActivity : AppCompatActivity() {
             val array = responseObject.getJSONArray("items")
 
             // Clear the list, so there will be no duplicates
-            photoLinkArray.clear()
+            photoLinkList.clear()
 
             for (i in 0 until array.length()) {
 
                 // item = Photo object with id and link
                 var item = array.getJSONObject(i)
-
-
-                var id = item.getInt("id") // Get id for photo
                 var link = item["photo_604"].toString() // Get link for photo
 
-                Log.i(debugTag, "PHOTO ID: $id")
-                Log.i(debugTag, "PHOTO LINK: $link")
-
-                Log.i(debugTag, "index i = $i link = $link")
-
-                photoLinkArray.add(link)
+                photoLinkList.add(link)
             }
 
         } catch (e: JSONException) {
@@ -119,25 +103,19 @@ open class GalleryActivity : AppCompatActivity() {
 
         val textview =  findViewById(R.id.debugTextView) as TextView
 
-        textview.text = "Photos are loaded, amount is: ${photoLinkArray.count()}"
-
+        textview.text = "Photos are loaded, amount is: ${photoLinkList.count()}"
     }
 
-    private fun displayGallery(photoLinkArray: List<String>) {
-        Log.i(debugTag, "displayGallery called")
+    private fun displayGallery(photoLinkList: List<String>) {
 
         viewManager = GridLayoutManager(this,4)
-        viewAdapter = GalleryAdapter(photoLinkArray) { id ->
-
-            Log.i(debugTag, id)
+        viewAdapter = GalleryAdapter(photoLinkList) { id ->
 
             val intent = Intent(this, FullScreenPreview::class.java )
             intent.putExtra("id", id)
             startActivity(intent)
 
         } // id -> photo id
-
-
 
         recyclerView = findViewById<RecyclerView>(R.id.galleryRecyclerView).apply {
 

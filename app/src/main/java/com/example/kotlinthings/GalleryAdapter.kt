@@ -1,6 +1,5 @@
 package com.example.kotlinthings
 
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,13 +9,11 @@ import com.squareup.picasso.Picasso
 
 typealias OnItemClickListener = (id: String) -> Unit
 
-class GalleryAdapter(photoLinkArray: List<String>, private val onItemClickListener : OnItemClickListener) : RecyclerView.Adapter<GalleryAdapter.ViewHolder>() {
+class GalleryAdapter(photoLinkList: List<String>, private val onItemClickListener : OnItemClickListener) : RecyclerView.Adapter<GalleryAdapter.ViewHolder>() {
 
-    var photoLinkArray = photoLinkArray
+    var photoLinkList = photoLinkList
 
   inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-
-
 
         val imageView = view.findViewById<ImageView>(R.id.galleryPhotoCell)
 
@@ -24,18 +21,14 @@ class GalleryAdapter(photoLinkArray: List<String>, private val onItemClickListen
             view.isFocusable = true
             view.isClickable = true
             view.setOnClickListener {
-                onItemClickListener(photoLinkArray[adapterPosition])
+                onItemClickListener(photoLinkList[adapterPosition])
             }
         }
-
     }
 
-        // Create new views (invoked by the layout manager)
         override fun onCreateViewHolder(
             parent: ViewGroup,
             viewType: Int
-
-
         ): ViewHolder {
 
             val imageView = LayoutInflater.from(parent.context)
@@ -45,25 +38,13 @@ class GalleryAdapter(photoLinkArray: List<String>, private val onItemClickListen
         }
 
         override fun getItemCount(): Int {
-            return photoLinkArray.count()
+            return photoLinkList.count()
         }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
 
-        var photo = photoLinkArray[position]
-
-        var position = holder.adapterPosition
-
-        Log.i("ADAPTER POSITION:", "$position")
-        Log.i("ITEM COUNT:", "$itemCount")
-
-        if(holder.adapterPosition == itemCount) {
-            Log.i("SDKdebug1","POSITION = LAST ELEMENT")
-
-        }
-
+        var photo = photoLinkList[position]
         Picasso.get().load(photo).into(holder.imageView)
-
     }
 
 }

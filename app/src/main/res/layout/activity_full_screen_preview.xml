@@ -12,6 +12,7 @@
         android:id="@+id/fullScreenImage"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:onClick="closePreview"
         android:scaleType="fitCenter"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
