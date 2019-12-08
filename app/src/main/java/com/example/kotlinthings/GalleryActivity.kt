@@ -18,26 +18,42 @@ import com.vk.sdk.VKSdk
 import com.vk.sdk.api.*
 import com.vk.sdk.api.VKRequest.VKRequestListener
 import kotlinx.android.synthetic.main.activity_gallery.*
-import org.json.JSONException
 import org.json.JSONObject
 
-open class GalleryActivity : AppCompatActivity() {
+class GalleryActivity : AppCompatActivity() {
 
     private lateinit var recyclerView: RecyclerView
-    private lateinit var viewAdapter: RecyclerView.Adapter<*>
-    private lateinit var viewManager: RecyclerView.LayoutManager
+    private val viewAdapter = GalleryAdapter { id ->
+
+        val intent = Intent(this, FullScreenPreview::class.java)
+        intent.putExtra("id", id)
+        startActivity(intent)
+
+    }
+    private val viewManager = GridLayoutManager(this, 4)
+    private val scrollListener = ScrollListener(viewManager) {
+        Log.i(debugTag, "Scroll to Bottom called")
+        getAndDisplayPhotos(viewAdapter.itemCount)
+    }
 
     private val debugTag = "SDKdebug"
     var photoLinkList = mutableListOf<String>()
 
     class User(name: String, lastName: String) {
-        var _name = name
-        var _lastName = lastName
+        var name = name
+        var lastName = lastName
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_gallery)
+
+        recyclerView = findViewById(R.id.galleryRecyclerView)
+        with(recyclerView) {
+            adapter = viewAdapter
+            layoutManager = viewManager
+            addOnScrollListener(scrollListener)
+        }
 
         val btn: Button = findViewById(R.id.btnShow)
         registerForContextMenu(btn)
@@ -46,11 +62,12 @@ open class GalleryActivity : AppCompatActivity() {
         if (photoLinkList.count() == 0) getAndDisplayPhotos()
     }
 
-    private fun getAndDisplayPhotos() {
+    private fun getAndDisplayPhotos(offset: Int = 0) {
 
         var requestParameters = VKParameters.from(
             VKApiConst.ALBUM_ID, "wall",
-            VKApiConst.COUNT, "50"
+            VKApiConst.COUNT, "50",
+            VKApiConst.OFFSET, offset
         )
 
         var request = VKRequest("photos.getAll", requestParameters)
@@ -94,23 +111,9 @@ open class GalleryActivity : AppCompatActivity() {
     }
 
     private fun displayGallery(photoLinkList: List<String>) {
-
-        viewManager = GridLayoutManager(this, 4)
-        viewAdapter = GalleryAdapter(photoLinkList) { id ->
-
-            val intent = Intent(this, FullScreenPreview::class.java)
-            intent.putExtra("id", id)
-            startActivity(intent)
-
-        } // id -> photo id
-
-        recyclerView = findViewById<RecyclerView>(R.id.galleryRecyclerView).apply {
-
-            setHasFixedSize(true) // All photos are fixed size (size can be set, by using different link in response)
-
-            layoutManager = viewManager
-            adapter = viewAdapter
-        }
+        Log.i(debugTag, "thread: ${Thread.currentThread().name}")
+        viewAdapter.addAll(photoLinkList)
+        scrollListener.dataFetched()
     }
 
     open fun logOut() {
@@ -133,8 +136,8 @@ open class GalleryActivity : AppCompatActivity() {
     }
 
     private fun showUserInfo(user: User) {
-        nameView.text = user._name
-        lastNameView.text = user._lastName
+        nameView.text = user.name
+        lastNameView.text = user.lastName
     }
 
     open fun showPopup(view: View) {

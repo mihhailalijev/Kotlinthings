@@ -1,5 +1,6 @@
 package com.example.kotlinthings
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,9 +10,16 @@ import com.squareup.picasso.Picasso
 
 typealias OnItemClickListener = (id: String) -> Unit
 
-class GalleryAdapter(photoLinkList: List<String>, private val onItemClickListener : OnItemClickListener) : RecyclerView.Adapter<GalleryAdapter.ViewHolder>() {
+class GalleryAdapter(private val onItemClickListener : OnItemClickListener) : RecyclerView.Adapter<GalleryAdapter.ViewHolder>() {
 
-    var photoLinkList = photoLinkList
+    var photoLinkList = mutableListOf<String>()
+
+    fun addAll(items: Collection<String>) {
+        val oldListSize = itemCount
+        photoLinkList.addAll(items)
+
+        notifyItemRangeInserted(oldListSize, itemCount)
+    }
 
   inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
@@ -38,7 +46,7 @@ class GalleryAdapter(photoLinkList: List<String>, private val onItemClickListene
         }
 
         override fun getItemCount(): Int {
-            return photoLinkList.count()
+            return photoLinkList.size
         }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
