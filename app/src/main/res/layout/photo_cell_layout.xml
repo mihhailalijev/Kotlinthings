@@ -8,12 +8,9 @@
 
     <ImageView
         android:id="@+id/galleryPhotoCell"
-        android:layout_width="75dp"
-        android:layout_height="75dp"
-        android:layout_margin="10dp"
-
+        android:layout_width="100dp"
+        android:layout_height="100dp"
         android:orientation="vertical"
-
         app:srcCompat="@android:color/holo_blue_bright" />
 
 </FrameLayout>
