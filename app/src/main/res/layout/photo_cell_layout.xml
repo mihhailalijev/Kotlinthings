@@ -10,7 +10,9 @@
         android:id="@+id/galleryPhotoCell"
         android:layout_width="100dp"
         android:layout_height="100dp"
+        android:layout_margin="1dp"
         android:orientation="vertical"
+        android:scaleType="centerCrop"
         app:srcCompat="@android:color/holo_blue_bright" />
 
 </FrameLayout>

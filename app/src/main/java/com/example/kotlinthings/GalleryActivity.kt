@@ -1,5 +1,7 @@
 package com.example.kotlinthings
 
+import android.app.AlertDialog
+import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -7,9 +9,9 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.widget.Button
-import android.widget.ImageView
 import android.widget.PopupMenu
 import android.widget.Toast
+
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -170,7 +172,13 @@ open class GalleryActivity : AppCompatActivity() {
     }
 
     open fun onMenuItemClick(item: MenuItem) {
-        logOut()
+        val alertDialog: AlertDialog = AlertDialog.Builder(this).create()
+        alertDialog.setTitle("Log Out?")
+        alertDialog.setMessage("You will be logged out")
+
+        alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "Ok", { dialog, which -> logOut()  })
+        alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "Cancel", { dialog, which -> alertDialog.dismiss()  })
+        alertDialog.show()
     }
 
     private fun getProfilePhoto() {
