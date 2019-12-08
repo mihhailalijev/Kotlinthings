@@ -46,7 +46,6 @@ class GalleryAdapter(photoLinkList: List<String>, private val onItemClickListene
         var photo = photoLinkList[position]
         Picasso.get().load(photo).into(holder.imageView)
     }
-
 }
 
 

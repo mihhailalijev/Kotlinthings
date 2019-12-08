@@ -21,7 +21,6 @@ import kotlinx.android.synthetic.main.activity_gallery.*
 import org.json.JSONException
 import org.json.JSONObject
 
-
 open class GalleryActivity : AppCompatActivity() {
 
     private lateinit var recyclerView: RecyclerView
@@ -29,14 +28,12 @@ open class GalleryActivity : AppCompatActivity() {
     private lateinit var viewManager: RecyclerView.LayoutManager
 
     private val debugTag = "SDKdebug"
+    var photoLinkList = mutableListOf<String>()
 
     class User(name: String, lastName: String) {
         var _name = name
         var _lastName = lastName
     }
-
-    // List of photo links
-    var photoLinkList = mutableListOf<String>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -52,38 +49,22 @@ open class GalleryActivity : AppCompatActivity() {
     private fun getAndDisplayPhotos() {
 
         var requestParameters = VKParameters.from(
-            VKApiConst.ALBUM_ID, "wall", // Get photos from user's wall
+            VKApiConst.ALBUM_ID, "wall",
             VKApiConst.COUNT, "50"
-        ) // Get max 50 photos
+        )
 
         var request = VKRequest("photos.getAll", requestParameters)
 
         request.executeWithListener(object : VKRequestListener() {
             override fun onComplete(response: VKResponse) {
-                //Do complete stuff
-
-                createPhotoLinkList(response) // send response to parse method
-
+                createPhotoLinkList(response)
                 displayGallery(photoLinkList)
-            }
-
-            override fun onError(error: VKError?) {
-                //Do error stuff
-            }
-
-            override fun attemptFailed(
-                request: VKRequest?,
-                attemptNumber: Int,
-                totalAttempts: Int
-            ) {
-
             }
         })
     }
 
     private fun createPhotoLinkList(response: VKResponse) {
 
-        try {
             val `object` = JSONObject(response.responseString)
             val responseObject = `object`.getJSONObject("response")
             val array = responseObject.getJSONArray("items")
@@ -99,10 +80,6 @@ open class GalleryActivity : AppCompatActivity() {
 
                 photoLinkList.add(link)
             }
-
-        } catch (e: JSONException) {
-            Log.i(debugTag, "Parsing Json's is just not my thing")
-        }
     }
 
     private fun createUserObject(response: VKResponse): User {
@@ -137,8 +114,6 @@ open class GalleryActivity : AppCompatActivity() {
     }
 
     open fun logOut() {
-        Log.i(debugTag, "log out called")
-
         VKSdk.logout()
         finish()
         val intent = Intent(this, MainActivity::class.java)

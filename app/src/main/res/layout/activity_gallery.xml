@@ -13,7 +13,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
 
-        android:background="#56000000"
+        android:background="#63000000"
         android:padding="7dp"
         app:layout_constraintTop_toTopOf="parent">
 
@@ -77,7 +77,7 @@
             android:onClick="showPopup"
             android:text="@string/vertical_ellipsis"
             android:textColor="#FFFFFF"
-            android:textSize="24sp"
+            android:textSize="30sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
