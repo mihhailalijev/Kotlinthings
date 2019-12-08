@@ -1,24 +1,26 @@
 package com.example.kotlinthings
 
 import android.content.Intent
-import android.content.res.Resources
-import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.util.Log
-import android.view.LayoutInflater
+import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.View
+import android.widget.Button
 import android.widget.ImageView
-import android.widget.TextView
+import android.widget.PopupMenu
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.squareup.picasso.Picasso
+import com.vk.sdk.VKSdk
 import com.vk.sdk.api.*
 import com.vk.sdk.api.VKRequest.VKRequestListener
 import kotlinx.android.synthetic.main.activity_gallery.*
-import kotlinx.android.synthetic.main.photo_cell_layout.*
 import org.json.JSONException
 import org.json.JSONObject
+
 
 open class GalleryActivity : AppCompatActivity() {
 
@@ -28,13 +30,22 @@ open class GalleryActivity : AppCompatActivity() {
 
     private val debugTag = "SDKdebug"
 
+    class User(name: String, lastName: String) {
+        var _name = name
+        var _lastName = lastName
+    }
+
     // List of photo links
     var photoLinkList = mutableListOf<String>()
-    
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_gallery)
 
+        val btn: Button = findViewById(R.id.btnShow)
+        registerForContextMenu(btn)
+        getProfilePhoto()
+        getAndShowUserInfo()
         if (photoLinkList.count() == 0) getAndDisplayPhotos()
     }
 
@@ -42,18 +53,16 @@ open class GalleryActivity : AppCompatActivity() {
 
         var requestParameters = VKParameters.from(
             VKApiConst.ALBUM_ID, "wall", // Get photos from user's wall
-            VKApiConst.COUNT, "50") // Get max 50 photos
+            VKApiConst.COUNT, "50"
+        ) // Get max 50 photos
 
         var request = VKRequest("photos.getAll", requestParameters)
 
         request.executeWithListener(object : VKRequestListener() {
             override fun onComplete(response: VKResponse) {
                 //Do complete stuff
-                Log.i(debugTag, "Before Array: ${photoLinkList.count()}")
 
                 createPhotoLinkList(response) // send response to parse method
-
-                Log.i(debugTag, "After array: ${photoLinkList.count()}")
 
                 displayGallery(photoLinkList)
             }
@@ -72,7 +81,7 @@ open class GalleryActivity : AppCompatActivity() {
         })
     }
 
-    private fun createPhotoLinkList(response : VKResponse) {
+    private fun createPhotoLinkList(response: VKResponse) {
 
         try {
             val `object` = JSONObject(response.responseString)
@@ -94,24 +103,25 @@ open class GalleryActivity : AppCompatActivity() {
         } catch (e: JSONException) {
             Log.i(debugTag, "Parsing Json's is just not my thing")
         }
-
-        // Show text view with debug info
-        showPhotoDebugInfo()
     }
 
-    private fun showPhotoDebugInfo() {
+    private fun createUserObject(response: VKResponse): User {
 
-        val textview =  findViewById(R.id.debugTextView) as TextView
+        val `object` = JSONObject(response.responseString)
+        val responseObject = `object`.getJSONObject("response")
 
-        textview.text = "Photos are loaded, amount is: ${photoLinkList.count()}"
+        var name = responseObject["first_name"].toString()
+        var lastName = responseObject["last_name"].toString()
+
+        return User(name, lastName)
     }
 
     private fun displayGallery(photoLinkList: List<String>) {
 
-        viewManager = GridLayoutManager(this,4)
+        viewManager = GridLayoutManager(this, 4)
         viewAdapter = GalleryAdapter(photoLinkList) { id ->
 
-            val intent = Intent(this, FullScreenPreview::class.java )
+            val intent = Intent(this, FullScreenPreview::class.java)
             intent.putExtra("id", id)
             startActivity(intent)
 
@@ -124,6 +134,66 @@ open class GalleryActivity : AppCompatActivity() {
             layoutManager = viewManager
             adapter = viewAdapter
         }
+    }
+
+    open fun logOut() {
+        Log.i(debugTag, "log out called")
+
+        VKSdk.logout()
+        finish()
+        val intent = Intent(this, MainActivity::class.java)
+        startActivity(intent)
+        Toast.makeText(this, "Logged out", Toast.LENGTH_LONG).show()
+    }
+
+    private fun getAndShowUserInfo() {
+        var request = VKRequest("account.getProfileInfo")
+
+        request.executeWithListener(object : VKRequestListener() {
+            override fun onComplete(response: VKResponse) {
+                //Do complete stuff
+                showUserInfo(createUserObject(response))
+            }
+        })
+    }
+
+    private fun showUserInfo(user: User) {
+        nameView.text = user._name
+        lastNameView.text = user._lastName
+    }
+
+    open fun showPopup(view: View) {
+        val popup = PopupMenu(this, view)
+        val inflater: MenuInflater = popup.getMenuInflater()
+        inflater.inflate(R.menu.menu, popup.getMenu())
+        popup.show()
+    }
+
+    open fun onMenuItemClick(item: MenuItem) {
+        logOut()
+    }
+
+    private fun getProfilePhoto() {
+
+        var photoLink = "yopta"
+
+        var requestParameters = VKParameters.from(
+            VKApiConst.FIELDS,
+            "photo_max_orig"
+        )
+        var request = VKRequest("users.get", requestParameters)
+
+        request.executeWithListener(object : VKRequestListener() {
+            override fun onComplete(response: VKResponse) {
+                //Do complete stuff
+
+                val resp = response.json.getJSONArray("response")
+                val user = resp.getJSONObject(0)
+                photoLink = user.getString("photo_max_orig").toString()
+
+                Picasso.get().load(photoLink).into(profileAvatar)
+                }
+        })
     }
 }
 
