@@ -1,6 +1,5 @@
-package com.example.kotlinthings
+package com.example.kotlinthings.Gallery
 
-import android.util.Log
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 

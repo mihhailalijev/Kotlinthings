@@ -1,4 +1,4 @@
-package com.example.kotlinthings
+package com.example.kotlinthings.Gallery
 
 import android.app.AlertDialog
 import android.content.Intent
@@ -13,6 +13,8 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.kotlinthings.*
+import com.example.kotlinthings.FullScreen.FullScreenPreview
 import com.squareup.picasso.Picasso
 import com.vk.sdk.VKSdk
 import com.vk.sdk.api.*
@@ -23,18 +25,21 @@ import org.json.JSONObject
 class GalleryActivity : AppCompatActivity() {
 
     private lateinit var recyclerView: RecyclerView
-    private val viewAdapter = GalleryAdapter { id ->
+    private val viewAdapter =
+        GalleryAdapter { id ->
 
-        val intent = Intent(this, FullScreenPreview::class.java)
-        intent.putExtra("id", id)
-        startActivity(intent)
+            val intent =
+                Intent(this, FullScreenPreview::class.java)
+            intent.putExtra("id", id)
+            startActivity(intent)
 
-    }
+        }
     private val viewManager = GridLayoutManager(this, 4)
-    private val scrollListener = ScrollListener(viewManager) {
-        Log.i(debugTag, "Scroll to Bottom called")
-        getAndDisplayPhotos(viewAdapter.itemCount)
-    }
+    private val scrollListener =
+        ScrollListener(viewManager) {
+            Log.i(debugTag, "Scroll to Bottom called")
+            getAndDisplayPhotos(viewAdapter.itemCount)
+        }
 
     private val debugTag = "SDKdebug"
     var photoLinkList = mutableListOf<String>()
@@ -107,7 +112,10 @@ class GalleryActivity : AppCompatActivity() {
         var name = responseObject["first_name"].toString()
         var lastName = responseObject["last_name"].toString()
 
-        return User(name, lastName)
+        return User(
+            name,
+            lastName
+        )
     }
 
     private fun displayGallery(photoLinkList: List<String>) {

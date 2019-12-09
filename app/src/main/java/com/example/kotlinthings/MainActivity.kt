@@ -3,13 +3,13 @@ package com.example.kotlinthings
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import com.vk.sdk.VKSdk
 import com.vk.sdk.api.VKError
 import com.vk.sdk.VKAccessToken
 import com.vk.sdk.VKCallback
 import android.widget.Toast
+import com.example.kotlinthings.Gallery.GalleryActivity
 import com.vk.sdk.VKScope
 
 class MainActivity : AppCompatActivity() {
