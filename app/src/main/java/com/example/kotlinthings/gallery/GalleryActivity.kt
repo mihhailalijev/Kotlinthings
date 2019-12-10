@@ -31,9 +31,7 @@ class GalleryActivity : AppCompatActivity() {
             val intent =
                 Intent(this, ScreenSlidePagerActivity::class.java)
             intent.putExtra("id", id)
-           // intent.putExtra(photoLinkList.)
             startActivity(intent)
-
         }
     private val viewManager = GridLayoutManager(this, 4)
     private val scrollListener =

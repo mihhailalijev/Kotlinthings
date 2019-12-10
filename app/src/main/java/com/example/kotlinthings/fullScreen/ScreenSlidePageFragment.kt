@@ -6,6 +6,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
+import com.example.kotlinthings.Photos
 import com.example.kotlinthings.R
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.activity_gallery.*
@@ -37,6 +39,8 @@ class ScreenSlidePageFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+
+        Photos.INSTANCE
         val url = arguments?.getString("url")
 
         Picasso.get().load(url).into(fullScreenImage)

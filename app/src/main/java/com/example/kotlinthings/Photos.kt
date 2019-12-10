@@ -19,4 +19,9 @@ class Photos {
 
     fun count() = images.size
 
+    fun getPosition(url: String): Int {
+
+      return images.indexOf(url)
+
+    }
 }
