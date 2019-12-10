@@ -1,4 +1,4 @@
-package com.example.kotlinthings.Gallery
+package com.example.kotlinthings.gallery
 
 import android.view.LayoutInflater
 import android.view.View
@@ -34,26 +34,23 @@ class GalleryAdapter(private val onItemClickListener : OnItemClickListener) : Re
         }
     }
 
-        override fun onCreateViewHolder(
-            parent: ViewGroup,
-            viewType: Int
-        ): ViewHolder {
+      override fun onCreateViewHolder( parent: ViewGroup, viewType: Int) : ViewHolder {
 
-            val imageView = LayoutInflater.from(parent.context)
-                .inflate(R.layout.photo_cell_layout, parent, false) as View
+        val imageView = LayoutInflater.from(parent.context)
+                    .inflate(R.layout.photo_cell_layout, parent, false) as View
 
-            return ViewHolder(imageView)
+        return ViewHolder(imageView)
         }
 
-        override fun getItemCount(): Int {
-            return photoLinkList.size
+      override fun getItemCount(): Int {
+                return photoLinkList.size
+            }
+
+      override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+
+            var photo = photoLinkList[position]
+            Picasso.get().load(photo).into(holder.imageView)
         }
-
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-
-        var photo = photoLinkList[position]
-        Picasso.get().load(photo).into(holder.imageView)
-    }
 }
 
 

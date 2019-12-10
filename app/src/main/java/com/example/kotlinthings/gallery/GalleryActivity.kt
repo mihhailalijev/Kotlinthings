@@ -1,4 +1,4 @@
-package com.example.kotlinthings.Gallery
+package com.example.kotlinthings.gallery
 
 import android.app.AlertDialog
 import android.content.Intent
@@ -14,7 +14,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.kotlinthings.*
-import com.example.kotlinthings.FullScreen.FullScreenPreview
+import com.example.kotlinthings.fullScreen.ScreenSlidePagerActivity
 import com.squareup.picasso.Picasso
 import com.vk.sdk.VKSdk
 import com.vk.sdk.api.*
@@ -29,8 +29,9 @@ class GalleryActivity : AppCompatActivity() {
         GalleryAdapter { id ->
 
             val intent =
-                Intent(this, FullScreenPreview::class.java)
+                Intent(this, ScreenSlidePagerActivity::class.java)
             intent.putExtra("id", id)
+           // intent.putExtra(photoLinkList.)
             startActivity(intent)
 
         }
@@ -42,7 +43,6 @@ class GalleryActivity : AppCompatActivity() {
         }
 
     private val debugTag = "SDKdebug"
-    var photoLinkList = mutableListOf<String>()
 
     class User(name: String, lastName: String) {
         var name = name
@@ -64,7 +64,7 @@ class GalleryActivity : AppCompatActivity() {
         registerForContextMenu(btn)
         getProfilePhoto()
         getAndShowUserInfo()
-        if (photoLinkList.count() == 0) getAndDisplayPhotos()
+        if (Photos.INSTANCE.count() == 0) getAndDisplayPhotos()
     }
 
     private fun getAndDisplayPhotos(offset: Int = 0) {
@@ -79,20 +79,19 @@ class GalleryActivity : AppCompatActivity() {
 
         request.executeWithListener(object : VKRequestListener() {
             override fun onComplete(response: VKResponse) {
-                createPhotoLinkList(response)
-                displayGallery(photoLinkList)
+                val list = createPhotoLinkList(response)
+                displayGallery(list)
             }
         })
     }
 
-    private fun createPhotoLinkList(response: VKResponse) {
+    private fun createPhotoLinkList(response: VKResponse): List<String> {
+
+            val result = mutableListOf<String>()
 
             val `object` = JSONObject(response.responseString)
             val responseObject = `object`.getJSONObject("response")
             val array = responseObject.getJSONArray("items")
-
-            // Clear the list, so there will be no duplicates
-            photoLinkList.clear()
 
             for (i in 0 until array.length()) {
 
@@ -100,8 +99,9 @@ class GalleryActivity : AppCompatActivity() {
                 var item = array.getJSONObject(i)
                 var link = item["photo_604"].toString() // Get link for photo
 
-                photoLinkList.add(link)
+                result.add(link)
             }
+        return result
     }
 
     private fun createUserObject(response: VKResponse): User {
@@ -119,8 +119,8 @@ class GalleryActivity : AppCompatActivity() {
     }
 
     private fun displayGallery(photoLinkList: List<String>) {
-        Log.i(debugTag, "thread: ${Thread.currentThread().name}")
         viewAdapter.addAll(photoLinkList)
+        Photos.INSTANCE.addAll(photoLinkList)
         scrollListener.dataFetched()
     }
 
@@ -167,8 +167,6 @@ class GalleryActivity : AppCompatActivity() {
 
     private fun getProfilePhoto() {
 
-        var photoLink = "yopta"
-
         var requestParameters = VKParameters.from(
             VKApiConst.FIELDS,
             "photo_max_orig"
@@ -181,7 +179,7 @@ class GalleryActivity : AppCompatActivity() {
 
                 val resp = response.json.getJSONArray("response")
                 val user = resp.getJSONObject(0)
-                photoLink = user.getString("photo_max_orig").toString()
+                var photoLink = user.getString("photo_max_orig").toString()
 
                 Picasso.get().load(photoLink).into(profileAvatar)
                 }

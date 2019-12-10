@@ -9,7 +9,7 @@ import com.vk.sdk.api.VKError
 import com.vk.sdk.VKAccessToken
 import com.vk.sdk.VKCallback
 import android.widget.Toast
-import com.example.kotlinthings.Gallery.GalleryActivity
+import com.example.kotlinthings.gallery.GalleryActivity
 import com.vk.sdk.VKScope
 
 class MainActivity : AppCompatActivity() {

@@ -1,4 +1,4 @@
-package com.example.kotlinthings.Gallery
+package com.example.kotlinthings.gallery
 
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView

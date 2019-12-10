@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/app_background"
-    tools:context=".Gallery.GalleryActivity">
+    tools:context=".gallery.GalleryActivity">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/topContainer"

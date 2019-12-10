@@ -1,5 +1,4 @@
-package com.example.kotlinthings.FullScreen
-
+package com.example.kotlinthings.fullScreen
 
 import android.os.Bundle
 import android.view.View
@@ -8,17 +7,18 @@ import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentStatePagerAdapter
 import androidx.viewpager.widget.ViewPager
+import com.example.kotlinthings.fullScreen.FullScreenPreviewFragmentAdapter
 import com.example.kotlinthings.R
 
+class ScreenSlidePagerActivity : FragmentActivity() {
 
-class FullScreenPreview : FragmentActivity() {
+    private lateinit var mPager: ViewPager
 
     var savedInstance : Bundle? = null
     private val NUM_PAGES = 5
 
-    private lateinit var mPager: ViewPager
     val fragmentAdapter =
-        FullScreenPreviewFragmentAdapter(
+        com.example.kotlinthings.fullScreen.FullScreenPreviewFragmentAdapter(
             supportFragmentManager
         )
 
@@ -27,10 +27,10 @@ class FullScreenPreview : FragmentActivity() {
         savedInstance = savedInstanceState
         setContentView(R.layout.activity_full_screen_preview)
 
-        val url = intent.getStringExtra("id")
-     //   Picasso.get().load(url).into(fullScreenImage)
         mPager = findViewById(R.id.pager)
         mPager.adapter = fragmentAdapter
+
+
     }
 
     override fun onBackPressed() {
@@ -48,7 +48,7 @@ class FullScreenPreview : FragmentActivity() {
         finish()
     }
 
-    private inner class ScreenSlidePagerAdapter(fm: FragmentManager) : FragmentStatePagerAdapter(fm) {
+     inner class FullScreenPreviewFragmentAdapter(fm: FragmentManager) : FragmentStatePagerAdapter(fm) {
         override fun getCount(): Int = NUM_PAGES
         override fun getItem(position: Int): Fragment =
             ScreenSlidePageFragment()

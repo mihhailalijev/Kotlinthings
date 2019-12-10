@@ -16,13 +16,13 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme.NoActionBar">
-        <activity android:name=".FullScreen.FullScreenPreview" android:theme="@style/fullScreenStyle"></activity>
+        <activity android:name=".fullScreen.ScreenSlidePagerActivity" android:theme="@style/fullScreenStyle"></activity>
 
         <activity
             android:name="com.vk.sdk.VKServiceActivity"
             android:label="ServiceActivity"
             android:theme="@style/VK.Transparent" />
-        <activity android:name=".Gallery.GalleryActivity" />
+        <activity android:name=".gallery.GalleryActivity" />
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
