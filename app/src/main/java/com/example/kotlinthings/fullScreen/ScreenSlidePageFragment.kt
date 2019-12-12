@@ -1,19 +1,19 @@
 package com.example.kotlinthings.fullScreen
 
+import com.example.kotlinthings.R
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
+import android.widget.TextView
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentManager
 import com.example.kotlinthings.Photos
-import com.example.kotlinthings.R
 import com.squareup.picasso.Picasso
-import kotlinx.android.synthetic.main.activity_gallery.*
 import kotlinx.android.synthetic.main.fragment_full_screen_preview.*
 
 class ScreenSlidePageFragment : Fragment() {
+
+
 
     companion object {
         fun newInstance(url: String): ScreenSlidePageFragment {
@@ -40,13 +40,9 @@ class ScreenSlidePageFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
 
-        Photos.INSTANCE
         val url = arguments?.getString("url")
-
         Picasso.get().load(url).into(fullScreenImage)
-
     }
-
 }
 
 
