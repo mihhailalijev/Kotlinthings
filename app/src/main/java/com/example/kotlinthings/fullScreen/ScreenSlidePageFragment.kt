@@ -13,8 +13,6 @@ import kotlinx.android.synthetic.main.fragment_full_screen_preview.*
 
 class ScreenSlidePageFragment : Fragment() {
 
-
-
     companion object {
         fun newInstance(url: String): ScreenSlidePageFragment {
             val fragment = ScreenSlidePageFragment()
@@ -38,7 +36,6 @@ class ScreenSlidePageFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
 
         val url = arguments?.getString("url")
         Picasso.get().load(url).into(fullScreenImage)

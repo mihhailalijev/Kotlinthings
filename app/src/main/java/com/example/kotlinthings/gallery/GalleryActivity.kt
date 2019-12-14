@@ -62,53 +62,67 @@ class GalleryActivity : AppCompatActivity() {
         registerForContextMenu(btn)
         getProfilePhoto()
         getAndShowUserInfo()
-        if (Photos.INSTANCE.count() == 0) getAndDisplayPhotos()
+        if (Photos.THUMBNAILS.count() == 0) getAndDisplayPhotos()
     }
 
     private fun getAndDisplayPhotos(offset: Int = 0) {
 
-        var requestParameters = VKParameters.from(
+        val requestParameters = VKParameters.from(
             VKApiConst.ALBUM_ID, "wall",
             VKApiConst.COUNT, "50",
             VKApiConst.OFFSET, offset
         )
 
-        var request = VKRequest("photos.getAll", requestParameters)
+        val request = VKRequest("photos.getAll", requestParameters)
 
         request.executeWithListener(object : VKRequestListener() {
             override fun onComplete(response: VKResponse) {
-                val list = createPhotoLinkList(response)
-                displayGallery(list)
+                val (thumbNails, origins) = createPhotoLinkList(response)
+                displayGallery(origins,thumbNails)
             }
         })
     }
 
-    private fun createPhotoLinkList(response: VKResponse): List<String> {
+    private fun createPhotoLinkList(response: VKResponse): Pair<List<String>, List<String>> {
 
-            val result = mutableListOf<String>()
+            val thumbnails = mutableListOf<String>()
+            val origins = mutableListOf<String>()
 
             val `object` = JSONObject(response.responseString)
             val responseObject = `object`.getJSONObject("response")
             val array = responseObject.getJSONArray("items")
+            val photoSizes = mutableListOf("photo_75", "photo_130", "photo_604", "photo_807", "photo_1280", "photo_2560")
 
-            for (i in 0 until array.length()) {
 
-                // item = Photo object with id and link
-                var item = array.getJSONObject(i)
-                var link = item["photo_604"].toString() // Get link for photo
+        for (i in 0 until array.length()) {
 
-                result.add(link)
+            val item = array.getJSONObject(i)
+
+            for(photoSize in photoSizes) {
+                if(item.has(photoSize)) {
+                    thumbnails.add( item[photoSize].toString())
+                    break
+                }
             }
-        return result
-    }
 
+            for(i in photoSizes.size-1 downTo 0) {
+                val photoSize = photoSizes[i]
+                if(item.has(photoSize)) {
+                    origins.add( item[photoSize].toString())
+                    break
+                }
+            }
+        }
+
+        return Pair(thumbnails,origins)
+    }
     private fun createUserObject(response: VKResponse): User {
 
         val `object` = JSONObject(response.responseString)
         val responseObject = `object`.getJSONObject("response")
 
-        var name = responseObject["first_name"].toString()
-        var lastName = responseObject["last_name"].toString()
+        val name = responseObject["first_name"].toString()
+        val lastName = responseObject["last_name"].toString()
 
         return User(
             name,
@@ -116,13 +130,14 @@ class GalleryActivity : AppCompatActivity() {
         )
     }
 
-    private fun displayGallery(photoLinkList: List<String>) {
+    private fun displayGallery(photoLinkList: List<String>, thumbNailsList: List<String>) {
         viewAdapter.addAll(photoLinkList)
-        Photos.INSTANCE.addAll(photoLinkList)
+        Photos.THUMBNAILS.addAll(thumbNailsList)
+        Photos.ORIGSIZE.addAll(photoLinkList)
         scrollListener.dataFetched()
     }
 
-    open fun logOut() {
+    fun logOut() {
         VKSdk.logout()
         finish()
         val intent = Intent(this, MainActivity::class.java)
@@ -131,7 +146,7 @@ class GalleryActivity : AppCompatActivity() {
     }
 
     private fun getAndShowUserInfo() {
-        var request = VKRequest("account.getProfileInfo")
+        val request = VKRequest("account.getProfileInfo")
 
         request.executeWithListener(object : VKRequestListener() {
             override fun onComplete(response: VKResponse) {
@@ -146,14 +161,14 @@ class GalleryActivity : AppCompatActivity() {
         lastNameView.text = user.lastName
     }
 
-    open fun showPopup(view: View) {
+    fun showPopup(view: View) {
         val popup = PopupMenu(this, view)
         val inflater: MenuInflater = popup.getMenuInflater()
         inflater.inflate(R.menu.menu, popup.getMenu())
         popup.show()
     }
 
-    open fun onMenuItemClick(item: MenuItem) {
+    fun onMenuItemClick(item: MenuItem) {
         val alertDialog: AlertDialog = AlertDialog.Builder(this).create()
         alertDialog.setTitle("Log Out?")
         alertDialog.setMessage("You will be logged out")

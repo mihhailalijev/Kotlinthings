@@ -4,7 +4,10 @@ class Photos {
 
     companion object {
 
-        val INSTANCE by lazy { Photos()
+        val THUMBNAILS by lazy { Photos()
+        }
+        val ORIGSIZE by lazy {
+            Photos()
         }
 
     }

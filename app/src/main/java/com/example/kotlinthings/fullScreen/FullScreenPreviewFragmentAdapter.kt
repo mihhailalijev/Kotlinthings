@@ -9,11 +9,11 @@ class FullScreenPreviewFragmentAdapter(fm: FragmentManager) : FragmentPagerAdapt
 
     override fun getItem(position: Int): Fragment {
 
-        return ScreenSlidePageFragment.newInstance(Photos.INSTANCE.get(position))
+        return ScreenSlidePageFragment.newInstance(Photos.ORIGSIZE.get(position))
     }
 
     override fun getCount(): Int {
-        return Photos.INSTANCE.count()
+        return Photos.ORIGSIZE.count()
     }
 
 }
