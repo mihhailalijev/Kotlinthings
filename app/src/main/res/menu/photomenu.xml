@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/shareButton"
+        android:onClick="shareButtonClick"
+        android:title="Share Photo" />
+    <item
+        android:id="@+id/saveButton"
+        android:onClick="saveButtonClick"
+        android:title="Save Photo" />
+</menu>

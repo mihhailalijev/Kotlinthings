@@ -7,6 +7,7 @@ import android.util.Log
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
+import android.widget.AdapterView
 import android.widget.Button
 import android.widget.PopupMenu
 import android.widget.Toast
@@ -56,9 +57,10 @@ class GalleryActivity : AppCompatActivity() {
             adapter = viewAdapter
             layoutManager = viewManager
             addOnScrollListener(scrollListener)
+
         }
 
-        val btn: Button = findViewById(R.id.btnShow)
+        val btn: Button = findViewById(R.id.menuButton)
         registerForContextMenu(btn)
         getProfilePhoto()
         getAndShowUserInfo()
@@ -77,13 +79,13 @@ class GalleryActivity : AppCompatActivity() {
 
         request.executeWithListener(object : VKRequestListener() {
             override fun onComplete(response: VKResponse) {
-                val (thumbNails, origins) = createPhotoLinkList(response)
+                val (thumbNails, origins) = createPhotoLinkLists(response)
                 displayGallery(origins,thumbNails)
             }
         })
     }
 
-    private fun createPhotoLinkList(response: VKResponse): Pair<List<String>, List<String>> {
+    private fun createPhotoLinkLists(response: VKResponse): Pair<List<String>, List<String>> {
 
             val thumbnails = mutableListOf<String>()
             val origins = mutableListOf<String>()
@@ -91,13 +93,13 @@ class GalleryActivity : AppCompatActivity() {
             val `object` = JSONObject(response.responseString)
             val responseObject = `object`.getJSONObject("response")
             val array = responseObject.getJSONArray("items")
-            val photoSizes = mutableListOf("photo_75", "photo_130", "photo_604", "photo_807", "photo_1280", "photo_2560")
-
+            val photoSizes = mutableListOf("photo_130", "photo_604", "photo_807", "photo_1280", "photo_2560")
 
         for (i in 0 until array.length()) {
 
             val item = array.getJSONObject(i)
 
+            // Orig. sizes
             for(photoSize in photoSizes) {
                 if(item.has(photoSize)) {
                     thumbnails.add( item[photoSize].toString())
@@ -105,6 +107,7 @@ class GalleryActivity : AppCompatActivity() {
                 }
             }
 
+            // Thumbnails
             for(i in photoSizes.size-1 downTo 0) {
                 val photoSize = photoSizes[i]
                 if(item.has(photoSize)) {
@@ -124,14 +127,11 @@ class GalleryActivity : AppCompatActivity() {
         val name = responseObject["first_name"].toString()
         val lastName = responseObject["last_name"].toString()
 
-        return User(
-            name,
-            lastName
-        )
+        return User( name, lastName)
     }
 
     private fun displayGallery(photoLinkList: List<String>, thumbNailsList: List<String>) {
-        viewAdapter.addAll(photoLinkList)
+        viewAdapter.addAll(thumbNailsList)
         Photos.THUMBNAILS.addAll(thumbNailsList)
         Photos.ORIGSIZE.addAll(photoLinkList)
         scrollListener.dataFetched()
@@ -161,10 +161,10 @@ class GalleryActivity : AppCompatActivity() {
         lastNameView.text = user.lastName
     }
 
-    fun showPopup(view: View) {
+    fun showGalleryPopup(view: View) {
         val popup = PopupMenu(this, view)
         val inflater: MenuInflater = popup.getMenuInflater()
-        inflater.inflate(R.menu.menu, popup.getMenu())
+        inflater.inflate(R.menu.gallerymenu, popup.getMenu())
         popup.show()
     }
 

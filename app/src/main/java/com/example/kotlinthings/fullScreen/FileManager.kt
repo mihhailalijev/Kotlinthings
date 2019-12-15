@@ -2,32 +2,40 @@ package com.example.kotlinthings.fullScreen
 
 import android.content.ContentValues
 import android.content.Context
+import android.content.Intent
 import android.graphics.Bitmap
-import android.os.Environment
 import android.provider.MediaStore
-import java.text.SimpleDateFormat
-import java.util.*
+import android.util.Log
+import android.widget.Toast
+import androidx.core.content.ContextCompat.startActivity
 
-class FileManager(private val context: Context) {
+class FileManager(private var context: Context) {
 
- fun saveFile(bitmapImage: Bitmap) {
+ fun saveFile(bitmapImage: Bitmap, share: Boolean = false) {
 
-     val sdf = SimpleDateFormat("dd/M/yyyy hh:mm:ss")
-     val currentDate = sdf.format(Date()).toString()
+     var imageTitle = "image_${Math.random()}"
 
-     val resolver = context.contentResolver
-     val contentValues = ContentValues().apply {
-         put(MediaStore.MediaColumns.DISPLAY_NAME, "no display name")
-         put(MediaStore.MediaColumns.MIME_TYPE, "image/jpeg")
-         put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_PICTURES)
+     var values = ContentValues()
+     values.put(MediaStore.Images.Media.TITLE, imageTitle)
+     values.put(MediaStore.Images.Media.MIME_TYPE, "image/JPEG")
+
+     var resolver = context.contentResolver
+     var uri = resolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values)
+
+     val imageOut = resolver.openOutputStream(uri!!)
+     imageOut.use { imageOut ->
+         bitmapImage.compress(Bitmap.CompressFormat.JPEG, 100, imageOut)
      }
 
-     val uri = resolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues)
-
-     MediaStore.Images.Media.insertImage(resolver, bitmapImage, currentDate, "desc")
-
-     resolver.openOutputStream(uri!!).use {
-         // TODO something with the stream
+     if (share) {
+         var sendIntent: Intent = Intent().apply {
+             action = Intent.ACTION_SEND
+             putExtra(Intent.EXTRA_STREAM, uri)
+             putExtra(Intent.EXTRA_TEXT, "Shared via kotlinthings app <3")
+             type = "image/JPEG"
+         }
+         Log.i("SHARE", "URI: $uri")
+         startActivity(context, sendIntent, null)
      }
-}
+ }
 }

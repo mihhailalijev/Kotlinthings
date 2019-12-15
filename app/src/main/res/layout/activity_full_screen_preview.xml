@@ -16,19 +16,14 @@
 
 
         <Button
-            android:id="@+id/shareButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="#00FFFFFF"
-            android:onClick="shareImage"
-            android:text="Share"
-            android:textColor="#C9FFFFFF"
-            android:textSize="18sp"
-            android:textStyle="bold"
+            android:id="@+id/photoMenuButton"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:background="@drawable/baseline_more_vert_white_48"
+            android:onClick="showPhotoPopup"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="1.0" />
+            app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@+id/positionLabel"
@@ -36,18 +31,17 @@
             android:layout_height="wrap_content"
             android:text="5 / 75"
             android:textColor="#C9FFFFFF"
-            android:textSize="18sp"
+            android:textSize="24sp"
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="@+id/photoMenuButton"
+            app:layout_constraintStart_toStartOf="@+id/backButton"
             app:layout_constraintTop_toTopOf="parent" />
 
         <Button
-            android:id="@+id/button"
+            android:id="@+id/backButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="2dp"
             android:background="#00FFFFFF"
             android:onClick="closePreview"
             android:text="Back"
@@ -67,7 +61,8 @@
         <androidx.viewpager.widget.ViewPager
             android:id="@+id/pager"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent"
+            android:background="#000000" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </LinearLayout>

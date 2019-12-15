@@ -3,8 +3,10 @@ package com.example.kotlinthings.gallery
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AdapterView
 import android.widget.ImageView
 import androidx.recyclerview.widget.RecyclerView
+import com.example.kotlinthings.Photos
 import com.example.kotlinthings.R
 import com.squareup.picasso.Picasso
 
@@ -12,7 +14,8 @@ typealias OnItemClickListener = (id: String) -> Unit
 
 class GalleryAdapter(private val onItemClickListener : OnItemClickListener) : RecyclerView.Adapter<GalleryAdapter.ViewHolder>() {
 
-    var photoLinkList = mutableListOf<String>()
+    private var photoLinkList = mutableListOf<String>()
+
 
     fun addAll(items: Collection<String>) {
         val oldListSize = itemCount
@@ -29,7 +32,8 @@ class GalleryAdapter(private val onItemClickListener : OnItemClickListener) : Re
             view.isFocusable = true
             view.isClickable = true
             view.setOnClickListener {
-                onItemClickListener(photoLinkList[adapterPosition])
+                onItemClickListener(Photos.ORIGSIZE.get(adapterPosition))
+
             }
         }
     }
