@@ -1,6 +1,7 @@
 package com.example.kotlinthings.fullScreen
 
 import android.graphics.Bitmap
+import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.util.Log
 import android.view.MenuInflater
@@ -14,6 +15,8 @@ import com.example.kotlinthings.Photos
 import com.example.kotlinthings.R
 import kotlinx.android.synthetic.main.activity_full_screen_preview.*
 import com.squareup.picasso.Picasso
+import com.squareup.picasso.Target
+import java.lang.Exception
 
 class ScreenSlidePagerActivity : FragmentActivity() {
 
@@ -58,28 +61,40 @@ class ScreenSlidePagerActivity : FragmentActivity() {
 
         PermissionManager(this).makeRequest()
 
-        var bitmap : Bitmap
         val url = imageUrl
+        Picasso.get().load(url).into(object: Target {
 
-        Thread(Runnable {
-            bitmap = Picasso.get().load(url).get()
-            FileManager(this).saveFile(bitmap, false)
-        }).start()
+                override fun onPrepareLoad(placeHolderDrawable: Drawable?) {}
 
-        Toast.makeText(this, "Photo saved!", Toast.LENGTH_LONG).show()
+                override fun onBitmapFailed(e: Exception?, errorDrawable: Drawable?) {}
+
+                override fun onBitmapLoaded(bitmap: Bitmap?, from: Picasso.LoadedFrom?) {
+                    FileManager(this@ScreenSlidePagerActivity).saveFile(bitmap!!, false)
+
+                    Toast.makeText(this@ScreenSlidePagerActivity, "Photo saved!", Toast.LENGTH_LONG)
+                        .show()
+                }
+            })
     }
 
     fun shareButtonClick(item: MenuItem) {
 
         PermissionManager(this).makeRequest()
 
-        var bitmap : Bitmap
         val url = imageUrl
+        Picasso.get().load(url).into(object: Target {
 
-        Thread(Runnable {
-            bitmap = Picasso.get().load(url).get()
-            FileManager(this).saveFile(bitmap, true)
-        }).start()
+            override fun onPrepareLoad(placeHolderDrawable: Drawable?) {}
+
+            override fun onBitmapFailed(e: Exception?, errorDrawable: Drawable?) {}
+
+            override fun onBitmapLoaded(bitmap: Bitmap?, from: Picasso.LoadedFrom?) {
+                FileManager(this@ScreenSlidePagerActivity).saveFile(bitmap!!, true)
+
+                Toast.makeText(this@ScreenSlidePagerActivity, "Photo saved!", Toast.LENGTH_LONG)
+                    .show()
+            }
+        })
     }
 
     fun showPhotoPopup(view: View) {
