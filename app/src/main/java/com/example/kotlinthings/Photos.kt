@@ -27,4 +27,8 @@ class Photos {
       return images.indexOf(url)
 
     }
+
+    fun clearAllPhotos() {
+        images.clear()
+    }
 }

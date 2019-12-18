@@ -3,6 +3,7 @@ package com.example.kotlinthings.gallery
 import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
@@ -59,7 +60,15 @@ class GalleryActivity : AppCompatActivity() {
         registerForContextMenu(btn)
         getProfilePhoto()
         getAndShowUserInfo()
-        getAndDisplayPhotos()
+
+        if(Photos.THUMBNAILS.count() == 0 && Photos.ORIGSIZE.count() == 0) getAndDisplayPhotos() else Log.i("LOG", "Loading more photos")
+
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        Photos.ORIGSIZE.clearAllPhotos()
+        Photos.THUMBNAILS.clearAllPhotos()
     }
 
     private fun getAndDisplayPhotos(offset: Int = 0) {
@@ -137,6 +146,8 @@ class GalleryActivity : AppCompatActivity() {
         finish()
         val intent = Intent(this, MainActivity::class.java)
         startActivity(intent)
+        Photos.ORIGSIZE.clearAllPhotos()
+        Photos.THUMBNAILS.clearAllPhotos()
         Toast.makeText(this, "Logged out", Toast.LENGTH_LONG).show()
     }
 
