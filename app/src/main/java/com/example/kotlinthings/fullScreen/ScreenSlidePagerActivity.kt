@@ -1,5 +1,6 @@
 package com.example.kotlinthings.fullScreen
 
+import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
 import android.os.Bundle
@@ -21,9 +22,10 @@ import java.lang.Exception
 class ScreenSlidePagerActivity : FragmentActivity() {
 
     private lateinit var mPager: ViewPager
+    private val fragmentAdapter = FullScreenPreviewFragmentAdapter(supportFragmentManager)
     var savedInstance : Bundle? = null
-    val fragmentAdapter = FullScreenPreviewFragmentAdapter( supportFragmentManager)
-    var imageUrl = "EMPTY DEFAULT LINK"
+    var imageUrl = "EMPTY"
+    var isShared = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,7 +49,6 @@ class ScreenSlidePagerActivity : FragmentActivity() {
 
         override fun onPageSelected(position: Int) {
            imageUrl = Photos.ORIGSIZE.get(position)
-            Log.i("IMAGE", "IMAGEURL: $imageUrl")
             positionLabel.text = "${position+1} / ${Photos.ORIGSIZE.count()}"
         }
 
@@ -57,47 +58,68 @@ class ScreenSlidePagerActivity : FragmentActivity() {
 
     fun closePreview(view: View) { finish() }
 
-    fun saveButtonClick(item: MenuItem) {
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
 
-        PermissionManager(this).makeRequest()
+        when (requestCode) {
+            0 -> {
 
-        val url = imageUrl
-        Picasso.get().load(url).into(object: Target {
+                if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED))
+                {
+                    Toast.makeText(this, "Permission granted", Toast.LENGTH_LONG).show()
 
-                override fun onPrepareLoad(placeHolderDrawable: Drawable?) {}
+                    val url = imageUrl
+                    Picasso.get().load(url).into(object: Target {
 
-                override fun onBitmapFailed(e: Exception?, errorDrawable: Drawable?) {}
+                        private val _context = this@ScreenSlidePagerActivity
+                        override fun onPrepareLoad(placeHolderDrawable: Drawable?) {}
+                        override fun onBitmapFailed(e: Exception?, errorDrawable: Drawable?) {Toast.makeText(_context, "Failed to get image",  Toast.LENGTH_LONG).show()}
 
-                override fun onBitmapLoaded(bitmap: Bitmap?, from: Picasso.LoadedFrom?) {
-                    FileManager(this@ScreenSlidePagerActivity).saveFile(bitmap!!, false)
+                        override fun onBitmapLoaded(bitmap: Bitmap?, from: Picasso.LoadedFrom?) {
+                            FileManager(_context).saveFile(bitmap!!, isShared)
+                        }
+                    })
 
-                    Toast.makeText(this@ScreenSlidePagerActivity, "Photo saved!", Toast.LENGTH_LONG)
-                        .show()
                 }
-            })
+                else {
+                    Toast.makeText(this, "Permission denied", Toast.LENGTH_LONG).show()
+                }
+                return
+            }
+        }
     }
 
-    fun shareButtonClick(item: MenuItem) {
+    fun saveOrShareButtonClick(item: MenuItem) {
 
-        PermissionManager(this).makeRequest()
+        isShared = when (item.itemId) {
+            R.id.shareButton -> true
+            else -> false
+        }
+
+        if(!PermissionManager(this).getPermissionStatus()) {
+            Toast.makeText(this, "There is no permission",  Toast.LENGTH_LONG).show()
+            PermissionManager(this).makeRequest()
+            return
+        }
+
 
         val url = imageUrl
         Picasso.get().load(url).into(object: Target {
-
+            private val _context = this@ScreenSlidePagerActivity
             override fun onPrepareLoad(placeHolderDrawable: Drawable?) {}
-
-            override fun onBitmapFailed(e: Exception?, errorDrawable: Drawable?) {}
+            override fun onBitmapFailed(e: Exception?, errorDrawable: Drawable?) {Toast.makeText(_context, "Failed to get image",  Toast.LENGTH_LONG).show()}
 
             override fun onBitmapLoaded(bitmap: Bitmap?, from: Picasso.LoadedFrom?) {
-                FileManager(this@ScreenSlidePagerActivity).saveFile(bitmap!!, true)
-
-                Toast.makeText(this@ScreenSlidePagerActivity, "Photo saved!", Toast.LENGTH_LONG)
-                    .show()
+                    FileManager(_context).saveFile(bitmap!!, isShared)
             }
         })
     }
 
-    fun showPhotoPopup(view: View) {
+    fun showPhotoMenuPopup(view: View) {
         val popup = PopupMenu(this, view)
         val inflater: MenuInflater = popup.getMenuInflater()
         inflater.inflate(R.menu.photomenu, popup.getMenu())

@@ -3,11 +3,9 @@ package com.example.kotlinthings.gallery
 import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
-import android.widget.AdapterView
 import android.widget.Button
 import android.widget.PopupMenu
 import android.widget.Toast
@@ -28,20 +26,17 @@ class GalleryActivity : AppCompatActivity() {
     private lateinit var recyclerView: RecyclerView
     private val viewAdapter =
         GalleryAdapter { id ->
-
             val intent =
                 Intent(this, ScreenSlidePagerActivity::class.java)
             intent.putExtra("id", id)
+            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
             startActivity(intent)
         }
     private val viewManager = GridLayoutManager(this, 4)
     private val scrollListener =
         ScrollListener(viewManager) {
-            Log.i(debugTag, "Scroll to Bottom called")
             getAndDisplayPhotos(viewAdapter.itemCount)
         }
-
-    private val debugTag = "SDKdebug"
 
     class User(name: String, lastName: String) {
         var name = name
@@ -64,7 +59,7 @@ class GalleryActivity : AppCompatActivity() {
         registerForContextMenu(btn)
         getProfilePhoto()
         getAndShowUserInfo()
-        if (Photos.THUMBNAILS.count() == 0) getAndDisplayPhotos()
+        getAndDisplayPhotos()
     }
 
     private fun getAndDisplayPhotos(offset: Int = 0) {
@@ -95,27 +90,27 @@ class GalleryActivity : AppCompatActivity() {
             val array = responseObject.getJSONArray("items")
             val photoSizes = mutableListOf("photo_130", "photo_604", "photo_807", "photo_1280", "photo_2560")
 
-        for (i in 0 until array.length()) {
+            for (i in 0 until array.length()) {
 
-            val item = array.getJSONObject(i)
+                val item = array.getJSONObject(i)
 
-            // Orig. sizes
-            for(photoSize in photoSizes) {
-                if(item.has(photoSize)) {
-                    thumbnails.add( item[photoSize].toString())
-                    break
+                // Orig. sizes
+                for(photoSize in photoSizes) {
+                    if(item.has(photoSize)) {
+                        thumbnails.add( item[photoSize].toString())
+                        break
+                    }
+                }
+
+                // Thumbnails
+                for(i in photoSizes.size-1 downTo 0) {
+                    val photoSize = photoSizes[i]
+                    if(item.has(photoSize)) {
+                        origins.add( item[photoSize].toString())
+                        break
+                    }
                 }
             }
-
-            // Thumbnails
-            for(i in photoSizes.size-1 downTo 0) {
-                val photoSize = photoSizes[i]
-                if(item.has(photoSize)) {
-                    origins.add( item[photoSize].toString())
-                    break
-                }
-            }
-        }
 
         return Pair(thumbnails,origins)
     }

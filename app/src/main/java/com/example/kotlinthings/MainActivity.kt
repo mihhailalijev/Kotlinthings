@@ -33,14 +33,10 @@ class MainActivity : AppCompatActivity() {
                 data,
                 object : VKCallback<VKAccessToken> {
                     override fun onResult(res: VKAccessToken) {
-                        // on Authorization success
                         Toast.makeText(baseContext.applicationContext, "Successfully logged in", Toast.LENGTH_LONG).show()
-
-                        // Open Gallery activity
                         openGalleryActivity()
                     }
                     override fun onError(error: VKError) {
-                        // On Authorization problem shows error code
                         Toast.makeText(baseContext.applicationContext, "There was an error, ${requestCode}", Toast.LENGTH_LONG).show()
                     }
                 })
@@ -50,7 +46,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun openGalleryActivity() {
-
         val intent = Intent(baseContext.applicationContext, GalleryActivity::class.java)
         finish()
         startActivity(intent)

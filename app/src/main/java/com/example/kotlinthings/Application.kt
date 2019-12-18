@@ -7,17 +7,13 @@ import com.vk.sdk.VKAccessTokenTracker
 
 class Application : android.app.Application() {
 
-    var isUserLoggedIn = false
-
     override fun onCreate() {
         super.onCreate()
 
         vkAccessTokenTracker.startTracking()
         VKSdk.initialize(this)
 
-        isUserLoggedIn = VKSdk.isLoggedIn()
-
-        Log.i("SDKdebug", "is User already logged in: $isUserLoggedIn")
+        Log.i("SDKdebug", "is User already logged in: ${VKSdk.isLoggedIn()}")
     }
 
     var vkAccessTokenTracker: VKAccessTokenTracker = object : VKAccessTokenTracker() {

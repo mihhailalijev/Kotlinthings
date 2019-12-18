@@ -3,7 +3,6 @@ package com.example.kotlinthings.gallery
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.AdapterView
 import android.widget.ImageView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.kotlinthings.Photos
@@ -33,7 +32,6 @@ class GalleryAdapter(private val onItemClickListener : OnItemClickListener) : Re
             view.isClickable = true
             view.setOnClickListener {
                 onItemClickListener(Photos.ORIGSIZE.get(adapterPosition))
-
             }
         }
     }

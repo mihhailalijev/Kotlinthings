@@ -26,7 +26,7 @@ class ScrollListener(
                 scrollListener()
             }
         }
-    }
+        }
     }
 
     @Synchronized

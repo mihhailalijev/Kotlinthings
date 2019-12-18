@@ -2,10 +2,10 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:id="@+id/shareButton"
-        android:onClick="shareButtonClick"
+        android:onClick="saveOrShareButtonClick"
         android:title="Share Photo" />
     <item
         android:id="@+id/saveButton"
-        android:onClick="saveButtonClick"
+        android:onClick="saveOrShareButtonClick"
         android:title="Save Photo" />
 </menu>
