@@ -61,14 +61,7 @@ class GalleryActivity : AppCompatActivity() {
         getProfilePhoto()
         getAndShowUserInfo()
 
-        if(Photos.THUMBNAILS.count() == 0 && Photos.ORIGSIZE.count() == 0) getAndDisplayPhotos() else Log.i("LOG", "Loading more photos")
-
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        Photos.ORIGSIZE.clearAllPhotos()
-        Photos.THUMBNAILS.clearAllPhotos()
+        if(Photos.THUMBNAILS.count() == 0 && Photos.ORIGSIZE.count() == 0) getAndDisplayPhotos() else Log.i("LOG", "Loading photos")
     }
 
     private fun getAndDisplayPhotos(offset: Int = 0) {
@@ -123,6 +116,7 @@ class GalleryActivity : AppCompatActivity() {
 
         return Pair(thumbnails,origins)
     }
+
     private fun createUserObject(response: VKResponse): User {
 
         val `object` = JSONObject(response.responseString)
@@ -141,16 +135,6 @@ class GalleryActivity : AppCompatActivity() {
         scrollListener.dataFetched()
     }
 
-    fun logOut() {
-        VKSdk.logout()
-        finish()
-        val intent = Intent(this, MainActivity::class.java)
-        startActivity(intent)
-        Photos.ORIGSIZE.clearAllPhotos()
-        Photos.THUMBNAILS.clearAllPhotos()
-        Toast.makeText(this, "Logged out", Toast.LENGTH_LONG).show()
-    }
-
     private fun getAndShowUserInfo() {
         val request = VKRequest("account.getProfileInfo")
 
@@ -165,23 +149,6 @@ class GalleryActivity : AppCompatActivity() {
     private fun showUserInfo(user: User) {
         nameView.text = user.name
         lastNameView.text = user.lastName
-    }
-
-    fun showGalleryPopup(view: View) {
-        val popup = PopupMenu(this, view)
-        val inflater: MenuInflater = popup.getMenuInflater()
-        inflater.inflate(R.menu.gallerymenu, popup.getMenu())
-        popup.show()
-    }
-
-    fun onMenuItemClick(item: MenuItem) {
-        val alertDialog: AlertDialog = AlertDialog.Builder(this).create()
-        alertDialog.setTitle("Log Out?")
-        alertDialog.setMessage("You will be logged out")
-
-        alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "Ok", { dialog, which -> logOut()  })
-        alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "Cancel", { dialog, which -> alertDialog.dismiss()  })
-        alertDialog.show()
     }
 
     private fun getProfilePhoto() {
@@ -201,8 +168,35 @@ class GalleryActivity : AppCompatActivity() {
                 var photoLink = user.getString("photo_max_orig").toString()
 
                 Picasso.get().load(photoLink).into(profileAvatar)
-                }
+            }
         })
+    }
+
+    fun showGalleryPopup(view: View) {
+        val popup = PopupMenu(this, view)
+        val inflater: MenuInflater = popup.getMenuInflater()
+        inflater.inflate(R.menu.gallerymenu, popup.getMenu())
+        popup.show()
+    }
+
+    fun onMenuItemClick(item: MenuItem) {
+        val alertDialog: AlertDialog = AlertDialog.Builder(this).create()
+        alertDialog.setTitle("Log Out?")
+        alertDialog.setMessage("You will be logged out")
+
+        alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "Ok", { dialog, which -> logOut()  })
+        alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "Cancel", { dialog, which -> alertDialog.dismiss()  })
+        alertDialog.show()
+    }
+
+    fun logOut() {
+        VKSdk.logout()
+        finish()
+        val intent = Intent(this, MainActivity::class.java)
+        startActivity(intent)
+        Photos.ORIGSIZE.clearAllPhotos()
+        Photos.THUMBNAILS.clearAllPhotos()
+        Toast.makeText(this, "Logged out", Toast.LENGTH_LONG).show()
     }
 }
 

@@ -1,5 +1,7 @@
 package com.example.kotlinthings
 
+import android.graphics.drawable.Drawable
+
 class Photos {
 
     companion object {

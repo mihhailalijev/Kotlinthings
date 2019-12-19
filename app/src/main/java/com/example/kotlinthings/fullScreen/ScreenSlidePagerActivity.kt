@@ -4,7 +4,6 @@ import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
 import android.os.Bundle
-import android.util.Log
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
@@ -27,8 +26,17 @@ class ScreenSlidePagerActivity : FragmentActivity() {
     var imageUrl = "EMPTY"
     var isShared = false
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+       // security image (its not)
+       if(Photos.ORIGSIZE.count() == 0) {
+           finish()
+            Toast.makeText(this, "There are no photos loaded", Toast.LENGTH_LONG).show()
+
+        }
+
         savedInstance = savedInstanceState
         setContentView(R.layout.activity_full_screen_preview)
 
