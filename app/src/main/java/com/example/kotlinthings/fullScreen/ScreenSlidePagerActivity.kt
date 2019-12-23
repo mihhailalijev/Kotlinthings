@@ -23,7 +23,7 @@ class ScreenSlidePagerActivity : FragmentActivity() {
     private lateinit var mPager: ViewPager
     private val fragmentAdapter = FullScreenPreviewFragmentAdapter(supportFragmentManager)
     var savedInstance : Bundle? = null
-    var imageUrl = "EMPTY"
+    lateinit var imageUrl: String
     var isShared = false
 
 

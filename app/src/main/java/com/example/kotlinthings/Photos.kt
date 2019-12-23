@@ -1,7 +1,5 @@
 package com.example.kotlinthings
 
-import android.graphics.drawable.Drawable
-
 class Photos {
 
     companion object {
@@ -21,6 +19,8 @@ class Photos {
     }
 
     fun get(position: Int) = images[position]
+
+    fun getAll(): List<String> { return images }
 
     fun count() = images.size
 

@@ -2,11 +2,14 @@ package com.example.kotlinthings.gallery
 
 import android.app.AlertDialog
 import android.content.Intent
+import android.content.res.Configuration
 import android.os.Bundle
+import android.provider.ContactsContract
 import android.util.Log
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
+import android.view.ViewManager
 import android.widget.Button
 import android.widget.PopupMenu
 import android.widget.Toast
@@ -33,11 +36,10 @@ class GalleryActivity : AppCompatActivity() {
             intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
             startActivity(intent)
         }
-    private val viewManager = GridLayoutManager(this, 4)
-    private val scrollListener =
-        ScrollListener(viewManager) {
-            getAndDisplayPhotos(viewAdapter.itemCount)
-        }
+
+    lateinit var scrollListener: ScrollListener
+    lateinit var viewManager: GridLayoutManager
+
 
     class User(name: String, lastName: String) {
         var name = name
@@ -48,6 +50,20 @@ class GalleryActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_gallery)
 
+        var orientation = getResources().getConfiguration().orientation
+        if(orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            viewManager = GridLayoutManager(this, 6)
+        } else {
+            viewManager = GridLayoutManager(this, 4)
+        }
+
+        scrollListener =
+            ScrollListener(viewManager) {
+
+            if(Photos.THUMBNAILS.count() != 0)
+                    getAndDisplayPhotos(viewAdapter.itemCount)
+            }
+
         recyclerView = findViewById(R.id.galleryRecyclerView)
         with(recyclerView) {
             adapter = viewAdapter
@@ -56,12 +72,10 @@ class GalleryActivity : AppCompatActivity() {
 
         }
 
-        val btn: Button = findViewById(R.id.menuButton)
-        registerForContextMenu(btn)
         getProfilePhoto()
         getAndShowUserInfo()
 
-        if(Photos.THUMBNAILS.count() == 0 && Photos.ORIGSIZE.count() == 0) getAndDisplayPhotos() else Log.i("LOG", "Loading photos")
+        if(Photos.THUMBNAILS.count() == 0 && viewAdapter.itemCount == 0) getAndDisplayPhotos() else viewAdapter.addAll(Photos.THUMBNAILS.getAll())
     }
 
     private fun getAndDisplayPhotos(offset: Int = 0) {
@@ -129,8 +143,8 @@ class GalleryActivity : AppCompatActivity() {
     }
 
     private fun displayGallery(photoLinkList: List<String>, thumbNailsList: List<String>) {
-        viewAdapter.addAll(thumbNailsList)
         Photos.THUMBNAILS.addAll(thumbNailsList)
+        viewAdapter.addAll(thumbNailsList)
         Photos.ORIGSIZE.addAll(photoLinkList)
         scrollListener.dataFetched()
     }
