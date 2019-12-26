@@ -33,7 +33,7 @@ class MainActivity : AppCompatActivity() {
                 data,
                 object : VKCallback<VKAccessToken> {
                     override fun onResult(res: VKAccessToken) {
-                        Toast.makeText(baseContext.applicationContext, "Successfully logged in", Toast.LENGTH_LONG).show()
+                        Toast.makeText(baseContext.applicationContext, "Successfully logged in", Toast.LENGTH_SHORT).show()
                         openGalleryActivity()
                     }
                     override fun onError(error: VKError) {

@@ -5,6 +5,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.recyclerview.widget.RecyclerView
+import com.example.kotlinthings.DownloadBitmapIntoImageView
 import com.example.kotlinthings.Photos
 import com.example.kotlinthings.R
 import com.squareup.picasso.Picasso
@@ -51,7 +52,10 @@ class GalleryAdapter(private val onItemClickListener : OnItemClickListener) : Re
       override fun onBindViewHolder(holder: ViewHolder, position: Int) {
 
             var photo = photoLinkList[position]
-            Picasso.get().load(photo).into(holder.imageView)
+       //     Picasso.get().load(photo).into(holder.imageView)
+          DownloadBitmapIntoImageView(photo, holder.imageView).execute()
+
+
         }
 }
 

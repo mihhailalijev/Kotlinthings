@@ -1,9 +1,12 @@
 package com.example.kotlinthings
 
+import android.app.ActivityManager
+import android.content.Context
 import android.util.Log
-import com.vk.sdk.VKSdk
 import com.vk.sdk.VKAccessToken
 import com.vk.sdk.VKAccessTokenTracker
+import com.vk.sdk.VKSdk
+
 
 class Application : android.app.Application() {
 

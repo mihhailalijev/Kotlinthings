@@ -50,8 +50,7 @@ class GalleryActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_gallery)
 
-        var orientation = getResources().getConfiguration().orientation
-        if(orientation == Configuration.ORIENTATION_LANDSCAPE) {
+        if(resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
             viewManager = GridLayoutManager(this, 6)
         } else {
             viewManager = GridLayoutManager(this, 4)
@@ -181,15 +180,15 @@ class GalleryActivity : AppCompatActivity() {
                 val user = resp.getJSONObject(0)
                 var photoLink = user.getString("photo_max_orig").toString()
 
-                Picasso.get().load(photoLink).into(profileAvatar)
+                DownloadBitmapIntoImageView(photoLink, profileAvatar).execute()
             }
         })
     }
 
     fun showGalleryPopup(view: View) {
         val popup = PopupMenu(this, view)
-        val inflater: MenuInflater = popup.getMenuInflater()
-        inflater.inflate(R.menu.gallerymenu, popup.getMenu())
+        val inflater: MenuInflater = popup.menuInflater
+        inflater.inflate(R.menu.gallerymenu, popup.menu)
         popup.show()
     }
 
@@ -210,7 +209,7 @@ class GalleryActivity : AppCompatActivity() {
         startActivity(intent)
         Photos.ORIGSIZE.clearAllPhotos()
         Photos.THUMBNAILS.clearAllPhotos()
-        Toast.makeText(this, "Logged out", Toast.LENGTH_LONG).show()
+        Toast.makeText(this, "Logged out", Toast.LENGTH_SHORT).show()
     }
 }
 

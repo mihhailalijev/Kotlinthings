@@ -78,7 +78,7 @@ class ScreenSlidePagerActivity : FragmentActivity() {
 
                 if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED))
                 {
-                    Toast.makeText(this, "Permission granted", Toast.LENGTH_LONG).show()
+                    Toast.makeText(this, "Permission granted", Toast.LENGTH_SHORT).show()
 
                     val url = imageUrl
                     Picasso.get().load(url).into(object: Target {
@@ -94,7 +94,7 @@ class ScreenSlidePagerActivity : FragmentActivity() {
 
                 }
                 else {
-                    Toast.makeText(this, "Permission denied", Toast.LENGTH_LONG).show()
+                    Toast.makeText(this, "Permission denied", Toast.LENGTH_SHORT).show()
                 }
                 return
             }
