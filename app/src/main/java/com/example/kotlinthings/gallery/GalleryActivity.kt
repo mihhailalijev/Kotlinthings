@@ -4,28 +4,28 @@ import android.app.AlertDialog
 import android.content.Intent
 import android.content.res.Configuration
 import android.os.Bundle
-import android.provider.ContactsContract
-import android.util.Log
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
-import android.view.ViewManager
-import android.widget.Button
 import android.widget.PopupMenu
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.kotlinthings.*
+import com.example.kotlinthings.DownloadBitmapIntoImageView
+import com.example.kotlinthings.MainActivity
+import com.example.kotlinthings.Network.Parser
+import com.example.kotlinthings.Network.Requests
+import com.example.kotlinthings.Photos
+import com.example.kotlinthings.R
 import com.example.kotlinthings.fullScreen.ScreenSlidePagerActivity
-import com.squareup.picasso.Picasso
 import com.vk.sdk.VKSdk
-import com.vk.sdk.api.*
-import com.vk.sdk.api.VKRequest.VKRequestListener
 import kotlinx.android.synthetic.main.activity_gallery.*
-import org.json.JSONObject
 
 class GalleryActivity : AppCompatActivity() {
+    private val parser = Parser()
+    private val requests = Requests()
+
 
     private lateinit var recyclerView: RecyclerView
     private val viewAdapter =
@@ -79,66 +79,12 @@ class GalleryActivity : AppCompatActivity() {
 
     private fun getAndDisplayPhotos(offset: Int = 0) {
 
-        val requestParameters = VKParameters.from(
-            VKApiConst.ALBUM_ID, "wall",
-            VKApiConst.COUNT, "50",
-            VKApiConst.OFFSET, offset
+        val (thumbNails, origins) = parser.parseUserPhotoCollection(
+            requests.getUserPhotoCollection(
+                offset
+            )
         )
-
-        val request = VKRequest("photos.getAll", requestParameters)
-
-        request.executeWithListener(object : VKRequestListener() {
-            override fun onComplete(response: VKResponse) {
-                val (thumbNails, origins) = createPhotoLinkLists(response)
-                displayGallery(origins,thumbNails)
-            }
-        })
-    }
-
-    private fun createPhotoLinkLists(response: VKResponse): Pair<List<String>, List<String>> {
-
-            val thumbnails = mutableListOf<String>()
-            val origins = mutableListOf<String>()
-
-            val `object` = JSONObject(response.responseString)
-            val responseObject = `object`.getJSONObject("response")
-            val array = responseObject.getJSONArray("items")
-            val photoSizes = mutableListOf("photo_130", "photo_604", "photo_807", "photo_1280", "photo_2560")
-
-            for (i in 0 until array.length()) {
-
-                val item = array.getJSONObject(i)
-
-                // Orig. sizes
-                for(photoSize in photoSizes) {
-                    if(item.has(photoSize)) {
-                        thumbnails.add( item[photoSize].toString())
-                        break
-                    }
-                }
-
-                // Thumbnails
-                for(i in photoSizes.size-1 downTo 0) {
-                    val photoSize = photoSizes[i]
-                    if(item.has(photoSize)) {
-                        origins.add( item[photoSize].toString())
-                        break
-                    }
-                }
-            }
-
-        return Pair(thumbnails,origins)
-    }
-
-    private fun createUserObject(response: VKResponse): User {
-
-        val `object` = JSONObject(response.responseString)
-        val responseObject = `object`.getJSONObject("response")
-
-        val name = responseObject["first_name"].toString()
-        val lastName = responseObject["last_name"].toString()
-
-        return User( name, lastName)
+        displayGallery(origins, thumbNails)
     }
 
     private fun displayGallery(photoLinkList: List<String>, thumbNailsList: List<String>) {
@@ -149,14 +95,7 @@ class GalleryActivity : AppCompatActivity() {
     }
 
     private fun getAndShowUserInfo() {
-        val request = VKRequest("account.getProfileInfo")
-
-        request.executeWithListener(object : VKRequestListener() {
-            override fun onComplete(response: VKResponse) {
-                //Do complete stuff
-                showUserInfo(createUserObject(response))
-            }
-        })
+        showUserInfo(parser.parseUserInfo(requests.getUserInfo()))
     }
 
     private fun showUserInfo(user: User) {
@@ -165,24 +104,8 @@ class GalleryActivity : AppCompatActivity() {
     }
 
     private fun getProfilePhoto() {
-
-        var requestParameters = VKParameters.from(
-            VKApiConst.FIELDS,
-            "photo_max_orig"
-        )
-        var request = VKRequest("users.get", requestParameters)
-
-        request.executeWithListener(object : VKRequestListener() {
-            override fun onComplete(response: VKResponse) {
-                //Do complete stuff
-
-                val resp = response.json.getJSONArray("response")
-                val user = resp.getJSONObject(0)
-                var photoLink = user.getString("photo_max_orig").toString()
-
-                DownloadBitmapIntoImageView(photoLink, profileAvatar).execute()
-            }
-        })
+        val photoLink = parser.parseUserPhoto(requests.getUserPhoto())
+        DownloadBitmapIntoImageView(photoLink, profileAvatar).execute()
     }
 
     fun showGalleryPopup(view: View) {
