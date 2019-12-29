@@ -12,13 +12,13 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.kotlinthings.DownloadBitmapIntoImageView
 import com.example.kotlinthings.MainActivity
-import com.example.kotlinthings.Network.Parser
-import com.example.kotlinthings.Network.Requests
 import com.example.kotlinthings.Photos
 import com.example.kotlinthings.R
 import com.example.kotlinthings.fullScreen.ScreenSlidePagerActivity
+import com.example.kotlinthings.network.DownloadBitmapIntoImageView
+import com.example.kotlinthings.network.Parser
+import com.example.kotlinthings.network.Requests
 import com.vk.sdk.VKSdk
 import kotlinx.android.synthetic.main.activity_gallery.*
 
@@ -26,8 +26,12 @@ class GalleryActivity : AppCompatActivity() {
     private val parser = Parser()
     private val requests = Requests()
 
+    lateinit var recyclerView: RecyclerView
+    lateinit var scrollListener: ScrollListener
+    lateinit var viewManager: GridLayoutManager
 
-    private lateinit var recyclerView: RecyclerView
+    data class User(var name: String, var lastName: String)
+
     private val viewAdapter =
         GalleryAdapter { id ->
             val intent =
@@ -37,18 +41,12 @@ class GalleryActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
-    lateinit var scrollListener: ScrollListener
-    lateinit var viewManager: GridLayoutManager
-
-
-    class User(name: String, lastName: String) {
-        var name = name
-        var lastName = lastName
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_gallery)
+
+        showProfilePhoto()
+        showUserInfo()
 
         if(resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
             viewManager = GridLayoutManager(this, 6)
@@ -59,8 +57,8 @@ class GalleryActivity : AppCompatActivity() {
         scrollListener =
             ScrollListener(viewManager) {
 
-            if(Photos.THUMBNAILS.count() != 0)
-                    getAndDisplayPhotos(viewAdapter.itemCount)
+                if (Photos.THUMBNAILS.count() != 0 && Photos.THUMBNAILS.count() == viewAdapter.itemCount)
+                    showGallery(viewAdapter.itemCount)
             }
 
         recyclerView = findViewById(R.id.galleryRecyclerView)
@@ -71,41 +69,34 @@ class GalleryActivity : AppCompatActivity() {
 
         }
 
-        getProfilePhoto()
-        getAndShowUserInfo()
-
-        if(Photos.THUMBNAILS.count() == 0 && viewAdapter.itemCount == 0) getAndDisplayPhotos() else viewAdapter.addAll(Photos.THUMBNAILS.getAll())
+        showGallery()
     }
 
-    private fun getAndDisplayPhotos(offset: Int = 0) {
-
+    private fun showGallery(offset: Int = 0) {
         val (thumbNails, origins) = parser.parseUserPhotoCollection(
             requests.getUserPhotoCollection(
                 offset
             )
         )
-        displayGallery(origins, thumbNails)
-    }
 
-    private fun displayGallery(photoLinkList: List<String>, thumbNailsList: List<String>) {
-        Photos.THUMBNAILS.addAll(thumbNailsList)
-        viewAdapter.addAll(thumbNailsList)
-        Photos.ORIGSIZE.addAll(photoLinkList)
+        Photos.THUMBNAILS.addAll(thumbNails)
+        viewAdapter.addAll(thumbNails)
+        Photos.ORIGSIZE.addAll(origins)
         scrollListener.dataFetched()
     }
 
-    private fun getAndShowUserInfo() {
-        showUserInfo(parser.parseUserInfo(requests.getUserInfo()))
-    }
-
-    private fun showUserInfo(user: User) {
+    private fun showUserInfo() {
+        val user = parser.parseUserInfo(requests.getUserInfo())
         nameView.text = user.name
         lastNameView.text = user.lastName
     }
 
-    private fun getProfilePhoto() {
+    private fun showProfilePhoto() {
         val photoLink = parser.parseUserPhoto(requests.getUserPhoto())
-        DownloadBitmapIntoImageView(photoLink, profileAvatar).execute()
+        DownloadBitmapIntoImageView(
+            photoLink,
+            profileAvatar
+        ).execute()
     }
 
     fun showGalleryPopup(view: View) {
@@ -128,10 +119,12 @@ class GalleryActivity : AppCompatActivity() {
     fun logOut() {
         VKSdk.logout()
         finish()
-        val intent = Intent(this, MainActivity::class.java)
-        startActivity(intent)
         Photos.ORIGSIZE.clearAllPhotos()
         Photos.THUMBNAILS.clearAllPhotos()
+
+        val intent = Intent(this, MainActivity::class.java)
+        startActivity(intent)
+
         Toast.makeText(this, "Logged out", Toast.LENGTH_SHORT).show()
     }
 }

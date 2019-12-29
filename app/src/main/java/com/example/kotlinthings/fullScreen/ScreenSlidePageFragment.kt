@@ -1,13 +1,13 @@
 package com.example.kotlinthings.fullScreen
 
-import com.example.kotlinthings.R
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import com.example.kotlinthings.DownloadBitmapIntoImageView
+import com.example.kotlinthings.R
+import com.example.kotlinthings.network.DownloadBitmapIntoImageView
 import kotlinx.android.synthetic.main.fragment_full_screen_preview.*
 
 class ScreenSlidePageFragment : Fragment() {
@@ -38,7 +38,13 @@ class ScreenSlidePageFragment : Fragment() {
 
         val url = arguments?.getString("url")
 
-        if(url == null) Log.e("ScreenSlidePageFragment", "IMAGE URL IS NULL") else DownloadBitmapIntoImageView(url, fullScreenImage).execute()
+        if (url == null) Log.e(
+            "ScreenSlidePageFragment",
+            "IMAGE URL IS NULL"
+        ) else DownloadBitmapIntoImageView(
+            url,
+            fullScreenImage
+        ).execute()
     }
 }
 

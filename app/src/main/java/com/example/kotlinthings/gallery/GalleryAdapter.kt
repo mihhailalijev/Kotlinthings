@@ -5,10 +5,9 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.recyclerview.widget.RecyclerView
-import com.example.kotlinthings.DownloadBitmapIntoImageView
 import com.example.kotlinthings.Photos
 import com.example.kotlinthings.R
-import com.squareup.picasso.Picasso
+import com.example.kotlinthings.network.DownloadBitmapIntoImageView
 
 typealias OnItemClickListener = (id: String) -> Unit
 
@@ -24,7 +23,7 @@ class GalleryAdapter(private val onItemClickListener : OnItemClickListener) : Re
         notifyItemRangeInserted(oldListSize, itemCount)
     }
 
-  inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+    inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
         val imageView = view.findViewById<ImageView>(R.id.galleryPhotoCell)
 
@@ -37,26 +36,22 @@ class GalleryAdapter(private val onItemClickListener : OnItemClickListener) : Re
         }
     }
 
-      override fun onCreateViewHolder( parent: ViewGroup, viewType: Int) : ViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
 
         val imageView = LayoutInflater.from(parent.context)
-                    .inflate(R.layout.photo_cell_layout, parent, false) as View
+            .inflate(R.layout.photo_cell_layout, parent, false) as View
 
         return ViewHolder(imageView)
-        }
+    }
 
-      override fun getItemCount(): Int {
-                return photoLinkList.size
-            }
+    override fun getItemCount(): Int {
+        return photoLinkList.size
+    }
 
-      override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-
-            var photo = photoLinkList[position]
-       //     Picasso.get().load(photo).into(holder.imageView)
-          DownloadBitmapIntoImageView(photo, holder.imageView).execute()
-
-
-        }
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+        var photo = photoLinkList[position]
+        DownloadBitmapIntoImageView(photo, holder.imageView).execute()
+    }
 }
 
 

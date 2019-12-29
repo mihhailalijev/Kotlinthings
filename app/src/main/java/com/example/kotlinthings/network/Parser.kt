@@ -1,4 +1,4 @@
-package com.example.kotlinthings.Network
+package com.example.kotlinthings.network
 
 import com.example.kotlinthings.gallery.GalleryActivity
 import com.vk.sdk.api.VKResponse

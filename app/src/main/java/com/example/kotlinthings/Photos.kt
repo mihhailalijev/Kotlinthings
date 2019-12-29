@@ -3,13 +3,8 @@ package com.example.kotlinthings
 class Photos {
 
     companion object {
-
-        val THUMBNAILS by lazy { Photos()
-        }
-        val ORIGSIZE by lazy {
-            Photos()
-        }
-
+        val THUMBNAILS by lazy { Photos() }
+        val ORIGSIZE by lazy { Photos() }
     }
 
     private val images = mutableListOf<String>()
@@ -25,9 +20,7 @@ class Photos {
     fun count() = images.size
 
     fun getPosition(url: String): Int {
-
-      return images.indexOf(url)
-
+        return images.indexOf(url)
     }
 
     fun clearAllPhotos() {

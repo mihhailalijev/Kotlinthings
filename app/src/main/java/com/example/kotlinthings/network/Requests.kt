@@ -1,4 +1,4 @@
-package com.example.kotlinthings.Network
+package com.example.kotlinthings.network
 
 import android.util.Log
 import com.vk.sdk.api.VKApiConst
@@ -16,7 +16,6 @@ class Requests {
 
         request.executeSyncWithListener(object : VKRequest.VKRequestListener() {
             override fun onComplete(vkResponse: VKResponse) {
-                //Do complete stuff
                 response = vkResponse
             }
         })
@@ -53,12 +52,9 @@ class Requests {
         request.executeSyncWithListener(object : VKRequest.VKRequestListener() {
             override fun onComplete(vkResponse: VKResponse) {
                 response = vkResponse
+                Log.i("DEBUG", "$response")
             }
         })
-        return response
-    }
-
-    private fun getResponse(response: VKResponse): VKResponse {
         return response
     }
 }

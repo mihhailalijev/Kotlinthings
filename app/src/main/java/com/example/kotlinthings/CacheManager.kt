@@ -9,7 +9,7 @@ class CacheManager {
         val MEMORY_LRU_CACHE by lazy { CacheManager() }
     }
 
-    private var maxMemorySize = 100 * 1024 * 1024 // 100mb
+    private var maxMemorySize = 64 * 1024 * 1024 // 64mb
 
     var memoryLruCache = object : LruCache<String?, Bitmap>(maxMemorySize) {
         override fun sizeOf(key: String?, value: Bitmap): Int {
@@ -36,8 +36,4 @@ class CacheManager {
     fun contains(key: String): Boolean {
         return getBitmapFromMemCache(key) != null
     }
-
-// -----------------------------------------------------------------------------------------------------------------------
-
-
 }

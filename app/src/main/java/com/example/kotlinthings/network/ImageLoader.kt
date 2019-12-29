@@ -1,4 +1,4 @@
-package com.example.kotlinthings
+package com.example.kotlinthings.network
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -17,7 +17,6 @@ class DownloadBitmapIntoImageView(imageUrl: String, imageView: ImageView): Async
     private var _imageView = imageView
     private lateinit var bitMap: Bitmap
 
-
     override fun doInBackground(vararg params: Unit?){
         Log.i("Cache", "Cache size is: ${MEMORY_LRU_CACHE.getCacheElementCount()} items")
 
@@ -31,31 +30,36 @@ class DownloadBitmapIntoImageView(imageUrl: String, imageView: ImageView): Async
         } else {
 
             try {
+                val url = URL(_imageUrl)
+                val connection: HttpURLConnection = url.openConnection() as HttpURLConnection
+                connection.doInput = true
+                connection.useCaches = true
+                connection.connect()
+                val input: InputStream = connection.inputStream
+                bitMap = BitmapFactory.decodeStream(input)
 
-            val url = URL(_imageUrl)
-            val connection: HttpURLConnection = url.openConnection() as HttpURLConnection
-            connection.setDoInput(true)
-            connection.setUseCaches(true)
-            connection.connect()
-            val input: InputStream = connection.getInputStream()
-            bitMap = BitmapFactory.decodeStream(input)
-
-            // new
-            MEMORY_LRU_CACHE.addBitmapToMemoryCache(_imageUrl, bitMap)
-            Log.i("CACHE2", "NEW CACHE SIZE: ${MEMORY_LRU_CACHE.getCacheElementCount()}")
-
-
+                // new
+                MEMORY_LRU_CACHE.addBitmapToMemoryCache(_imageUrl, bitMap)
+                Log.i("CACHE2", "NEW CACHE SIZE: ${MEMORY_LRU_CACHE.getCacheElementCount()}")
             }
             catch (e: IOException) {
-            e.printStackTrace()
-            Log.i("ImageLoader", "Error in getting image from url, url was: $_imageUrl")
+                e.printStackTrace()
+                Log.i("ImageLoader", "Error in getting image from url, url was: $_imageUrl")
 
-        }}
+            }
+        }
     }
 
     override fun onPostExecute(result: Unit) {
         super.onPostExecute(result)
         _imageView.setImageBitmap(bitMap)
     }
+
+}
+
+class ImageLoader {
+
+    private fun downloadImage(url: String) {}
+
 
 }
